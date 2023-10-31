@@ -1,0 +1,39 @@
+version: '3.9'
+
+services:
+  app:
+    container_name: app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    networks:
+      - app-network
+    ports:
+      - "${PORT}:${PORT}"
+    depends_on:
+      - postgres
+    volumes:
+      - ./src:/app/src
+      - /app/src/node_modules
+    command: yarn run start:dev
+
+  postgres:
+    container_name: postgres
+    image: postgres:15-alpine
+    restart: always
+    networks:
+      - app-network
+    ports:
+      - "${DB_PORT}:${POSTGRES_PORT}"
+    env_file:
+      - .env
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  app-volume:
+
+ 

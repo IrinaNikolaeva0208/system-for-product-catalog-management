@@ -29,7 +29,10 @@ export class CatalogService {
 
   async update(id: string, updates: Partial<ProductDto>) {
     const productToUpdate = await this.getById(id);
-    return await this.productRepository.save({ productToUpdate, ...updates });
+    return await this.productRepository.save({
+      ...productToUpdate,
+      ...updates,
+    });
   }
 
   async delete(id: string) {
