@@ -1,21 +1,38 @@
 version: '3.9'
 
 services:
-  app:
-    container_name: app
+  api-gateway:
+    container_name: api-gateway
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: src/api-gateway/Dockerfile
     restart: always
     networks:
       - app-network
     ports:
-      - "${PORT}:${PORT}"
+      - "${GATEWAY_PORT}:${GATEWAY_PORT}"
     depends_on:
       - postgres
     volumes:
-      - ./src:/app/src
-      - /app/src/node_modules
+      - ./src/api-gateway:/app/src
+      - /app/node_modules
+    command: yarn run start:dev
+
+  catalog:
+    container_name: catalog
+    build:
+      context: .
+      dockerfile: src/catalog/Dockerfile
+    restart: always
+    networks:
+      - app-network
+    ports:
+      - ${CATALOG_PORT}
+    depends_on:
+      - postgres
+    volumes:
+      - ./src/catalog:/app/src
+      - /app/node_modules
     command: yarn run start:dev
 
   postgres:
