@@ -6,12 +6,10 @@ COPY src/catalog/package.json .
 
 RUN yarn install
 
-COPY src/catalog ./src
+COPY src/catalog/app ./src/app
 
-COPY src/utils ./utils
+COPY src/utils ./src/utils
 
-COPY .env tsconfig.json ./
+COPY .env tsconfig.json src/catalog/nest-cli.json ./
 
 RUN yarn run build
-
-CMD [ "node",  "dist/catalog/main" ]

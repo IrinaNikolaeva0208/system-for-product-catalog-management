@@ -6,12 +6,10 @@ COPY src/api-gateway/package.json .
 
 RUN yarn install
 
-COPY src/api-gateway ./src
+COPY src/api-gateway/app ./src/app
 
-COPY src/utils ./utils
+COPY src/utils ./src/utils
 
-COPY .env tsconfig.json ./
+COPY .env tsconfig.json src/api-gateway/nest-cli.json ./
 
 RUN yarn run build
-
-CMD [ "node",  "dist/main" ]

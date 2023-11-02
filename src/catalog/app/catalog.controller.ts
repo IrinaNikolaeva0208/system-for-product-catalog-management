@@ -10,7 +10,7 @@ import {
   HttpCode,
 } from '@nestjs/common';
 import { CatalogService } from './catalog.service';
-import { ProductDto } from './dto/product.dto';
+import { ProductDto } from 'src/utils/dto/product.dto';
 
 @Controller()
 export class CatalogController {

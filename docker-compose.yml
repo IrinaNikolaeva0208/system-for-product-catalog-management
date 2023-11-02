@@ -13,9 +13,6 @@ services:
       - "${GATEWAY_PORT}:${GATEWAY_PORT}"
     depends_on:
       - postgres
-    volumes:
-      - ./src/api-gateway:/app/src
-      - /app/node_modules
     command: yarn run start:dev
 
   catalog:
@@ -30,9 +27,6 @@ services:
       - ${CATALOG_PORT}
     depends_on:
       - postgres
-    volumes:
-      - ./src/catalog:/app/src
-      - /app/node_modules
     command: yarn run start:dev
 
   postgres:
@@ -53,4 +47,4 @@ networks:
 volumes:
   app-volume:
 
- 
+
