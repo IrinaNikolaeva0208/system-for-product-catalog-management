@@ -1,25 +1,40 @@
 version: '3.9'
 
 services:
-  app:
-    container_name: app
+  api-gateway:
+    container_name: api-gateway
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: src/api-gateway/Dockerfile
     restart: always
     networks:
       - app-network
+      - broker
     ports:
-      - "${PORT}:${PORT}"
+      - "${GATEWAY_PORT}:${GATEWAY_PORT}"
     depends_on:
       - postgres
-    volumes:
-      - ./src:/app/src
-      - /app/src/node_modules
+      - kafka
+    command: yarn run start:dev
+
+  catalog:
+    container_name: catalog
+    build:
+      context: .
+      dockerfile: src/catalog/Dockerfile
+    restart: always
+    networks:
+      - app-network
+      - broker
+    ports:
+      - ${CATALOG_PORT}
+    depends_on:
+      - postgres
+      - kafka
     command: yarn run start:dev
 
   postgres:
-    container_name: postgres
+    container_name: postgres1
     image: postgres:15-alpine
     restart: always
     networks:
@@ -29,11 +44,41 @@ services:
     env_file:
       - .env
 
+  zookeeper:
+    container_name: zookeeper
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - 22181:2181
+    networks:
+      - broker
+  
+  kafka:
+    container_name: kafka
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      - zookeeper
+    ports:
+      - 29092:29092
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - broker
+
 networks:
   app-network:
+    driver: bridge
+  broker: 
     driver: bridge
 
 volumes:
   app-volume:
 
- 
+
