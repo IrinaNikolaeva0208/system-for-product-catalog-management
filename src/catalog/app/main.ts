@@ -1,16 +1,17 @@
 import { NestFactory } from '@nestjs/core';
 import { Transport } from '@nestjs/microservices';
 import { CatalogModule } from './catalog.module';
-import { Logger } from '@nestjs/common';
-
-const logger = new Logger();
 
 async function bootstrap() {
   const app = await NestFactory.createMicroservice(CatalogModule, {
-    transport: Transport.TCP,
+    transport: Transport.KAFKA,
     options: {
-      host: 'catalog',
-      port: 3001,
+      client: {
+        brokers: ['kafka:9092'],
+      },
+      consumer: {
+        groupId: 'catalog-consumer',
+      },
     },
   });
   app.listen();

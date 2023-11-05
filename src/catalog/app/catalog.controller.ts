@@ -1,47 +1,35 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Patch,
-  Delete,
-  Body,
-  Param,
-  ParseUUIDPipe,
-  HttpCode,
-} from '@nestjs/common';
+import { Controller, Patch, Body, Param, ParseUUIDPipe } from '@nestjs/common';
 import { CatalogService } from './catalog.service';
 import { ProductDto } from 'src/utils/dto/product.dto';
+import { Payload, MessagePattern } from '@nestjs/microservices';
 
 @Controller()
 export class CatalogController {
   constructor(private readonly catalogService: CatalogService) {}
 
-  @Get()
+  @MessagePattern('product.all')
   async getAllProducts() {
     return await this.catalogService.getAll();
   }
 
-  @Get(':id')
-  async getProductById(@Param('id', ParseUUIDPipe) id: string) {
+  @MessagePattern('product.byId')
+  async getProductById(@Payload() id: string) {
     return await this.catalogService.getById(id);
   }
 
-  @Post()
-  async createProduct(@Body() productDto: ProductDto) {
+  @MessagePattern('product.create')
+  async createProduct(@Payload() productDto: ProductDto) {
     return await this.catalogService.create(productDto);
   }
 
-  @Patch(':id')
-  async updateProduct(
-    @Param('id', ParseUUIDPipe) id: string,
-    @Body() productDto: Partial<ProductDto>,
-  ) {
-    return await this.catalogService.update(id, productDto);
+  @MessagePattern('product.update')
+  async updateProduct(@Payload() updateDto: ProductDto & { id: string }) {
+    const { id, ...updateProductDto } = updateDto;
+    return await this.catalogService.update(id, updateProductDto);
   }
 
-  @HttpCode(204)
-  @Delete(':id')
-  async deleteProduct(@Param('id', ParseUUIDPipe) id: string) {
+  @MessagePattern('product.delete')
+  async deleteProduct(@Payload() id: string) {
     await this.catalogService.delete(id);
   }
 }

@@ -1,22 +1,27 @@
 import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { ApiGatewayService } from './api-gateway.service';
-import { ApiGatewayController } from './api-gateway.controller';
+import { CatalogService } from './catalog.service';
+import { CatalogController } from './catalog.controller';
 
 @Module({
   imports: [
     ClientsModule.register([
       {
-        name: 'catalog_service',
-        transport: Transport.TCP,
+        name: 'CATALOG_MICROSERVICE',
+        transport: Transport.KAFKA,
         options: {
-          host: 'catalog',
-          port: 8888,
+          client: {
+            clientId: 'catalog',
+            brokers: ['kafka:9092'],
+          },
+          consumer: {
+            groupId: 'catalog-consumer',
+          },
         },
       },
     ]),
   ],
-  controllers: [ApiGatewayController],
-  providers: [ApiGatewayService],
+  controllers: [CatalogController],
+  providers: [CatalogService],
 })
-export class ApiGatewayModule {} ///
+export class ApiGatewayModule {}
