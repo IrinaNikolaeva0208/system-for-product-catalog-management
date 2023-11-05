@@ -19,6 +19,19 @@ import { CatalogController } from './catalog.controller';
           },
         },
       },
+      {
+        name: 'AUTH_MICROSERVICE',
+        transport: Transport.KAFKA,
+        options: {
+          client: {
+            clientId: 'auth',
+            brokers: ['kafka:9092'],
+          },
+          consumer: {
+            groupId: 'auth-consumer',
+          },
+        },
+      },
     ]),
   ],
   controllers: [CatalogController],

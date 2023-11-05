@@ -17,6 +17,22 @@ services:
       - kafka
     command: yarn run start:dev
 
+  auth:
+    container_name: auth
+    build:
+      context: .
+      dockerfile: src/auth/Dockerfile
+    restart: always
+    networks:
+      - app-network
+      - broker
+    ports:
+      - "${AUTH_PORT}:${AUTH_PORT}"
+    depends_on:
+      - postgres
+      - kafka
+    command: yarn run start:dev
+
   catalog:
     container_name: catalog
     build:
