@@ -31,7 +31,15 @@ export class AuthController {
 
   @Post('refresh')
   @UseGuards(RefreshGuard)
-  refreshAccessToken(@Req() req: Request) {
-    return this.authService.refresh(req.user);
+  async refreshAccessToken(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const token = await new Promise<any>((resolve) =>
+      this.authService.refresh(req.user).subscribe((data) => {
+        resolve(data);
+      }),
+    );
+    res.cookie('access', token.accessToken);
   }
 }
