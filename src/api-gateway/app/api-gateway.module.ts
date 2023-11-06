@@ -7,11 +7,9 @@ import { PassportModule } from '@nestjs/passport';
 import { config } from 'dotenv';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { APP_GUARD } from '@nestjs/core';
-import { LocalGuard } from './guards/local.guard';
-import { RefreshGuard } from './guards/refresh.guard';
 import { LocalStrategy } from './strategies/local.strategy';
 import { RefreshStrategy } from './strategies/refresh.strategy';
+import { AccessStrategy } from './strategies/access.strategy';
 
 config();
 
@@ -52,6 +50,12 @@ config();
     ]),
   ],
   controllers: [CatalogController, AuthController],
-  providers: [CatalogService, AuthService, LocalStrategy, RefreshStrategy],
+  providers: [
+    CatalogService,
+    AuthService,
+    LocalStrategy,
+    RefreshStrategy,
+    AccessStrategy,
+  ],
 })
 export class ApiGatewayModule {}

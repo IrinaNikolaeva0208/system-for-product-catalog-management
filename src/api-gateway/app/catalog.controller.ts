@@ -8,10 +8,13 @@ import {
   Delete,
   ParseUUIDPipe,
   HttpCode,
+  UseGuards,
 } from '@nestjs/common';
 import { CatalogService } from './catalog.service';
 import { ProductDto } from 'src/utils/dto/product.dto';
+import { AccessGuard } from './guards/access.guard';
 
+@UseGuards(AccessGuard)
 @Controller('catalog')
 export class CatalogController {
   constructor(private readonly catalogService: CatalogService) {}

@@ -15,8 +15,8 @@ config();
     TypeOrmModule.forRoot(options),
     TypeOrmModule.forFeature([User]),
     JwtModule.register({
-      secret: process.env.JWT_SECRET_KEY,
-      signOptions: { expiresIn: process.env.SECRET_EXPIRE_TIME },
+      secret: process.env.JWT_SECRET_REFRESH_KEY,
+      signOptions: { expiresIn: process.env.REFRESH_EXPIRE_TIME },
     }),
     PassportModule,
   ],
