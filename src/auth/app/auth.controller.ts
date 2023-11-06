@@ -1,29 +1,29 @@
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { AuthService } from './auth.service';
-import { CreateAuthDto } from 'src/utils/dto/user.dto';
+import { UserDto } from 'src/utils/dto/user.dto';
 
 @Controller()
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @MessagePattern('createAuth')
-  create(@Payload() createAuthDto: CreateAuthDto) {
-    return this.authService.create(createAuthDto);
+  @MessagePattern('user.signup')
+  create(@Payload() userDto: UserDto) {
+    return this.authService.create(userDto);
   }
 
-  @MessagePattern('findAllAuth')
-  findAll() {
-    return this.authService.findAll();
+  @MessagePattern('user.login')
+  login(@Payload() userDto: UserDto) {
+    return this.authService.login(userDto);
   }
 
-  @MessagePattern('findOneAuth')
-  findOne(@Payload() id: number) {
-    return this.authService.findOne(id);
+  @MessagePattern('user.refresh')
+  refresh(@Payload() userDto: UserDto) {
+    return this.authService.refresh(userDto);
   }
 
-  @MessagePattern('removeAuth')
-  remove(@Payload() id: number) {
-    return this.authService.remove(id);
+  @MessagePattern('user.validate')
+  validate(@Payload() userDto: UserDto) {
+    return this.authService.validateUser(userDto);
   }
 }

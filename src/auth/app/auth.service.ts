@@ -1,21 +1,54 @@
-import { Injectable } from '@nestjs/common';
-import { CreateAuthDto } from 'src/utils/dto/user.dto';
+import { Injectable, ConflictException } from '@nestjs/common';
+import { UserDto } from 'src/utils/dto/user.dto';
+import { InjectRepository } from '@nestjs/typeorm/dist';
+import { User } from './entities/user.entity';
+import { Repository } from 'typeorm';
+import { RpcException } from '@nestjs/microservices';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
-  create(createAuthDto: CreateAuthDto) {
-    return 'This action adds a new auth';
+  constructor(
+    @InjectRepository(User) private readonly userRepository: Repository<User>,
+    private readonly jwtService: JwtService,
+  ) {}
+
+  async create(userDto: UserDto) {
+    const userWithSameLogin = await this.findByLogin(userDto.login);
+    if (userWithSameLogin)
+      throw new RpcException(new ConflictException('Login already in use'));
+    const createdUser = this.userRepository.create(userDto);
+    return JSON.stringify(await this.userRepository.save(createdUser));
   }
 
-  findAll() {
-    return `This action returns all auth`;
+  async findByLogin(login: string) {
+    return await this.userRepository.findOneBy({ login });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
+  async login(payload: any) {
+    const [accessToken, refreshToken] = await Promise.all([
+      this.jwtService.signAsync(payload),
+      this.jwtService.signAsync(payload, {
+        secret: process.env.JWT_SECRET_REFRESH_KEY,
+        expiresIn: process.env.REFRESH_EXPIRE_TIME,
+      }),
+    ]);
+    return { accessToken, refreshToken };
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
+  async validateUser(user: UserDto) {
+    const requiredUser = await this.findByLogin(user.login);
+    if (requiredUser) {
+      return JSON.stringify(requiredUser);
+    }
+    return null;
+  }
+
+  async refresh(payload: any) {
+    const accessToken = await this.jwtService.signAsync(payload, {
+      secret: process.env.JWT_SECRET_KEY,
+      expiresIn: process.env.SECRET_EXPIRE_TIME,
+    });
+    return { accessToken };
   }
 }

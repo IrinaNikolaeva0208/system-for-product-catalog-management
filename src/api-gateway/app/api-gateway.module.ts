@@ -2,9 +2,26 @@ import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { CatalogService } from './catalog.service';
 import { CatalogController } from './catalog.controller';
+import { JwtModule } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
+import { config } from 'dotenv';
+import { AuthController } from './auth.controller';
+import { AuthService } from './auth.service';
+import { APP_GUARD } from '@nestjs/core';
+import { LocalGuard } from './guards/local.guard';
+import { RefreshGuard } from './guards/refresh.guard';
+import { LocalStrategy } from './strategies/local.strategy';
+import { RefreshStrategy } from './strategies/refresh.strategy';
+
+config();
 
 @Module({
   imports: [
+    JwtModule.register({
+      secret: process.env.JWT_SECRET_REFRESH_KEY,
+      signOptions: { expiresIn: process.env.REFRESH_EXPIRE_TIME },
+    }),
+    PassportModule,
     ClientsModule.register([
       {
         name: 'CATALOG_MICROSERVICE',
@@ -34,7 +51,7 @@ import { CatalogController } from './catalog.controller';
       },
     ]),
   ],
-  controllers: [CatalogController],
-  providers: [CatalogService],
+  controllers: [CatalogController, AuthController],
+  providers: [CatalogService, AuthService, LocalStrategy, RefreshStrategy],
 })
 export class ApiGatewayModule {}
