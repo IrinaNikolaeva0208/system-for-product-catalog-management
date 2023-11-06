@@ -1,4 +1,8 @@
-import { Controller } from '@nestjs/common';
+import {
+  Controller,
+  UseInterceptors,
+  ClassSerializerInterceptor,
+} from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { AuthService } from './auth.service';
 import { UserDto } from 'src/utils/dto/user.dto';
@@ -8,6 +12,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @MessagePattern('user.signup')
+  @UseInterceptors(ClassSerializerInterceptor)
   create(@Payload() userDto: UserDto) {
     return this.authService.create(userDto);
   }

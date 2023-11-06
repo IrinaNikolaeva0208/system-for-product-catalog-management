@@ -22,7 +22,7 @@ export class AuthService {
       ...userDto,
       password: await bcrypt.hash(userDto.password, +process.env.CRYPT_SALT),
     });
-    return JSON.stringify(await this.userRepository.save(createdUser));
+    return await this.userRepository.save(createdUser);
   }
 
   async findByLogin(login: string) {
