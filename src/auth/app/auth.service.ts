@@ -5,6 +5,7 @@ import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { RpcException } from '@nestjs/microservices';
 import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -17,7 +18,10 @@ export class AuthService {
     const userWithSameLogin = await this.findByLogin(userDto.login);
     if (userWithSameLogin)
       throw new RpcException(new ConflictException('Login already in use'));
-    const createdUser = this.userRepository.create(userDto);
+    const createdUser = this.userRepository.create({
+      ...userDto,
+      password: await bcrypt.hash(userDto.password, +process.env.CRYPT_SALT),
+    });
     return JSON.stringify(await this.userRepository.save(createdUser));
   }
 
@@ -38,7 +42,10 @@ export class AuthService {
 
   async validateUser(user: UserDto) {
     const requiredUser = await this.findByLogin(user.login);
-    if (requiredUser) {
+    if (
+      requiredUser &&
+      (await bcrypt.compare(user.password, requiredUser.password))
+    ) {
       return JSON.stringify(requiredUser);
     }
     return null;
