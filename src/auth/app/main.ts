@@ -1,19 +1,10 @@
 import { NestFactory } from '@nestjs/core';
-import { Transport } from '@nestjs/microservices';
 import { AuthModule } from './auth.module';
+import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
-  const app = await NestFactory.createMicroservice(AuthModule, {
-    transport: Transport.KAFKA,
-    options: {
-      client: {
-        brokers: ['kafka:9092'],
-      },
-      consumer: {
-        groupId: 'auth-consumer',
-      },
-    },
-  });
-  app.listen();
+  const app = await NestFactory.create(AuthModule);
+  app.use(cookieParser());
+  app.listen(3002);
 }
 bootstrap();

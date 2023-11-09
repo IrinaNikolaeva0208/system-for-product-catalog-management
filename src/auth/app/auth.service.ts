@@ -46,7 +46,7 @@ export class AuthService {
       requiredUser &&
       (await bcrypt.compare(user.password, requiredUser.password))
     ) {
-      return JSON.stringify(requiredUser);
+      return requiredUser;
     }
     return null;
   }
