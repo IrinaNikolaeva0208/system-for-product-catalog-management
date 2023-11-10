@@ -2,7 +2,7 @@ import { UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { User } from './entities/user.entity';
 import { UserInput } from './dto/user.input';
-import { Resolver, Mutation, Args, Context } from '@nestjs/graphql';
+import { Resolver, Mutation, Args, Context } from '@nestjs/graphql/dist';
 import { RefreshGuard } from './guards/refresh.guard';
 import { ResponseMessage } from './entities/message.entity';
 import { LocalGuard } from './guards/local.guard';

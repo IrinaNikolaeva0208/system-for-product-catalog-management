@@ -1,5 +1,5 @@
 import { ExecutionContext, Injectable } from '@nestjs/common';
-import { GqlExecutionContext } from '@nestjs/graphql';
+import { GqlExecutionContext } from '@nestjs/graphql/dist';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
 

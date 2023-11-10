@@ -8,7 +8,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { config } from 'dotenv';
 import { RefreshStrategy } from './strategies/refresh.strategy';
-import { GraphQLModule } from '@nestjs/graphql';
+import { GraphQLModule } from '@nestjs/graphql/dist';
 import {
   ApolloFederationDriverConfig,
   ApolloFederationDriver,
