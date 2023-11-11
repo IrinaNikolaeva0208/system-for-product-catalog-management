@@ -1,16 +1,27 @@
 import { Module } from '@nestjs/common';
 import { CatalogService } from './catalog.service';
-import { CatalogController } from './catalog.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Product } from './entities/product.entity';
 import { options } from 'src/utils/database/ormconfig';
+import { GraphQLModule } from '@nestjs/graphql/dist';
+import { AccessStrategy } from 'src/utils/strategies/access.strategy';
+import {
+  ApolloFederationDriverConfig,
+  ApolloFederationDriver,
+} from '@nestjs/apollo';
+import { CatalogResolver } from './catalog.resolver';
 
 @Module({
   imports: [
+    GraphQLModule.forRoot<ApolloFederationDriverConfig>({
+      driver: ApolloFederationDriver,
+      autoSchemaFile: {
+        federation: 2,
+      },
+    }),
     TypeOrmModule.forRoot(options),
     TypeOrmModule.forFeature([Product]),
   ],
-  controllers: [CatalogController],
-  providers: [CatalogService],
+  providers: [CatalogService, CatalogResolver, AccessStrategy],
 })
 export class CatalogModule {}

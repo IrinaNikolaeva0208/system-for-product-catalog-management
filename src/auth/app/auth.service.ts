@@ -1,11 +1,10 @@
 import { Injectable, ConflictException } from '@nestjs/common';
-import { UserDto } from 'src/utils/dto/user.dto';
 import { InjectRepository } from '@nestjs/typeorm/dist';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
-import { RpcException } from '@nestjs/microservices';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { UserInput } from './dto/user.input';
 
 @Injectable()
 export class AuthService {
@@ -14,10 +13,9 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async create(userDto: UserDto) {
+  async create(userDto: UserInput) {
     const userWithSameLogin = await this.findByLogin(userDto.login);
-    if (userWithSameLogin)
-      throw new RpcException(new ConflictException('Login already in use'));
+    if (userWithSameLogin) throw new ConflictException('Login already in use');
     const createdUser = this.userRepository.create({
       ...userDto,
       password: await bcrypt.hash(userDto.password, +process.env.CRYPT_SALT),
@@ -40,13 +38,13 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
-  async validateUser(user: UserDto) {
+  async validateUser(user: UserInput) {
     const requiredUser = await this.findByLogin(user.login);
     if (
       requiredUser &&
       (await bcrypt.compare(user.password, requiredUser.password))
     ) {
-      return JSON.stringify(requiredUser);
+      return requiredUser;
     }
     return null;
   }
