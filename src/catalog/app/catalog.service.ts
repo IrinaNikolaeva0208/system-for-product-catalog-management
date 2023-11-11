@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Product } from './entities/product.entity';
-import { ProductDto } from 'src/utils/dto/product.dto';
+import { CreateProductInput } from './dto/create-product.input';
 import { NotFoundException } from '@nestjs/common/exceptions';
-import { RpcException } from '@nestjs/microservices';
+import { UpdateProductInput } from './dto/update-product.input';
 
 @Injectable()
 export class CatalogService {
@@ -14,34 +14,33 @@ export class CatalogService {
   ) {}
 
   async getAll() {
-    return JSON.stringify(await this.productRepository.find());
+    return await this.productRepository.find();
   }
 
   async getById(id: string) {
     const productToGet = await this.productRepository.findOneBy({ id });
-    if (!productToGet)
-      throw new RpcException(new NotFoundException('Product not found'));
-    return JSON.stringify(productToGet);
+    if (!productToGet) throw new NotFoundException('Product not found');
+    console.log(productToGet);
+    return productToGet;
   }
 
-  async create(product: ProductDto) {
+  async create(product: CreateProductInput) {
     const createdProduct = this.productRepository.create(product);
-    return JSON.stringify(await this.productRepository.save(createdProduct));
+    return await this.productRepository.save(createdProduct);
   }
 
-  async update(id: string, updates: Partial<ProductDto>) {
+  async update(id: string, updates: UpdateProductInput) {
     const productToUpdate = await this.getById(id);
-    return JSON.stringify(
-      await this.productRepository.save({
-        ...JSON.parse(productToUpdate),
-        ...updates,
-      }),
-    );
+    return await this.productRepository.save({
+      ...productToUpdate,
+      ...updates,
+    });
   }
 
   async delete(id: string) {
     const deleteAlbumResult = await this.productRepository.delete(id);
     if (!deleteAlbumResult.affected)
-      throw new RpcException(new NotFoundException('Product not found'));
+      throw new NotFoundException('Product not found');
+    return { id };
   }
 }

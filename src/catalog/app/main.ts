@@ -1,19 +1,11 @@
 import { NestFactory } from '@nestjs/core';
-import { Transport } from '@nestjs/microservices';
 import { CatalogModule } from './catalog.module';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
-  const app = await NestFactory.createMicroservice(CatalogModule, {
-    transport: Transport.KAFKA,
-    options: {
-      client: {
-        brokers: ['kafka:9092'],
-      },
-      consumer: {
-        groupId: 'catalog-consumer',
-      },
-    },
-  });
-  app.listen();
+  const app = await NestFactory.create(CatalogModule);
+  app.enableCors();
+  app.useGlobalPipes(new ValidationPipe());
+  app.listen(3001);
 }
 bootstrap();
