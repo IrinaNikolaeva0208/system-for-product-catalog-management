@@ -18,14 +18,6 @@ import { CatalogResolver } from './catalog.resolver';
       autoSchemaFile: {
         federation: 2,
       },
-      formatError: (error) => {
-        const originalError = (error.extensions?.originalError as any) || error;
-
-        return {
-          message: originalError.message || originalError.stacktrace,
-          statusCode: originalError.statusCode || 500,
-        };
-      },
     }),
     TypeOrmModule.forRoot(options),
     TypeOrmModule.forFeature([Product]),

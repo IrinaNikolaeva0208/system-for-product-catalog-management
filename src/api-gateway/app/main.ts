@@ -1,14 +1,17 @@
 import { NestFactory } from '@nestjs/core';
-import { ApiGatewayModule } from './api-gateway.module';
+import { GatewayModule } from './gateway.module';
 import { ValidationPipe } from '@nestjs/common/pipes';
-import { RpcExceptionFilter } from './filters/rpcExeptionFilter';
-import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
-  const app = await NestFactory.create(ApiGatewayModule);
-  app.useGlobalPipes(new ValidationPipe());
-  app.useGlobalFilters(new RpcExceptionFilter());
-  await app.listen(3000);
+  const app = await NestFactory.create(GatewayModule);
+  try {
+    app.enableCors();
+    app.useGlobalPipes(new ValidationPipe());
+    await app.listen(3000);
+  } catch (err) {
+    await app.close();
+    bootstrap();
+  }
 }
 
 bootstrap();
