@@ -1,6 +1,7 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { ObjectType, Field, ID } from '@nestjs/graphql/dist';
 import { Role } from 'src/utils/enums/role.enum';
+import { Product } from 'src/utils/entities';
 
 @ObjectType()
 @Entity()
@@ -19,4 +20,7 @@ export class User {
 
   @Column()
   password: string;
+
+  @OneToMany(() => Product, (product) => product.owner)
+  products: Product[];
 }

@@ -1,11 +1,10 @@
-import { Product } from './entities/product.entity';
+import { Product, User, DeletedId } from 'src/utils/entities';
 import { CreateProductInput } from './dto/create-product.input';
 import { UpdateProductInput } from './dto/update-product.input';
 import { CatalogService } from './catalog.service';
 import { Resolver, Query, Mutation, Args, ID } from '@nestjs/graphql/dist';
-import { DeletedId } from './entities/deletedId.entity';
 import { ParseUUIDPipe } from '@nestjs/common';
-import { Roles, Public } from 'src/utils/decorators';
+import { Roles, Public, CurrentUser } from 'src/utils/decorators';
 import { Role } from 'src/utils/enums/role.enum';
 
 @Resolver(() => Product)
@@ -30,8 +29,9 @@ export class CatalogResolver {
   @Mutation(() => Product)
   async createProduct(
     @Args('createProductInput') productInput: CreateProductInput,
+    @CurrentUser() user: User,
   ) {
-    return await this.catalogService.create(productInput);
+    return await this.catalogService.create(productInput, user);
   }
 
   @Roles(Role.Seller)
@@ -39,15 +39,17 @@ export class CatalogResolver {
   async updateProduct(
     @Args('id', { type: () => ID }, ParseUUIDPipe) id: string,
     @Args('updateProductInput') productInput: UpdateProductInput,
+    @CurrentUser() user: User,
   ) {
-    return await this.catalogService.update(id, productInput);
+    return await this.catalogService.update(id, productInput, user);
   }
 
   @Roles(Role.Seller, Role.Admin)
   @Mutation(() => DeletedId)
   async deleteProduct(
     @Args('id', { type: () => ID }, ParseUUIDPipe) id: string,
+    @CurrentUser() user: User,
   ) {
-    return await this.catalogService.delete(id);
+    return await this.catalogService.delete(id, user);
   }
 }

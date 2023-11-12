@@ -1,14 +1,12 @@
 import { UseGuards, ParseUUIDPipe } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { User } from './entities/user.entity';
+import { User, ResponseMessage } from 'src/utils/entities';
 import { UserInput } from './dto/user.input';
 import { Resolver, Mutation, Args, Context } from '@nestjs/graphql/dist';
 import { RefreshGuard } from './guards/refresh.guard';
-import { ResponseMessage } from './entities/message.entity';
 import { LocalGuard } from './guards/local.guard';
-import { CurrentUser } from './decorators/user.decorator';
 import { Role } from 'src/utils/enums/role.enum';
-import { Roles, Public } from 'src/utils/decorators';
+import { Roles, Public, CurrentUser } from 'src/utils/decorators';
 
 @Resolver(() => User)
 export class AuthResolver {

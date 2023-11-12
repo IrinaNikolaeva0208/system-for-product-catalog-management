@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { CatalogService } from './catalog.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Product } from './entities/product.entity';
+import { Product } from 'src/utils/entities';
 import { options } from 'src/utils/database/ormconfig';
 import { GraphQLModule } from '@nestjs/graphql/dist';
 import { AccessStrategy } from 'src/utils/strategies/access.strategy';
