@@ -11,7 +11,9 @@ import {
   ApolloFederationDriver,
 } from '@nestjs/apollo';
 import { CatalogResolver } from './catalog.resolver';
-import { AccessGuard, RolesGuard } from 'src/utils/guards';
+import { AccessGuard, RolesGuard, AuthenticatedGuard } from 'src/utils/guards';
+import { PassportModule } from '@nestjs/passport';
+import { SessionSerializer } from 'src/utils/strategies/session.serializer';
 
 @Module({
   imports: [
@@ -24,6 +26,7 @@ import { AccessGuard, RolesGuard } from 'src/utils/guards';
     }),
     TypeOrmModule.forRoot(options),
     TypeOrmModule.forFeature([Product]),
+    PassportModule.register({ session: true }),
   ],
   providers: [
     CatalogService,
@@ -37,6 +40,7 @@ import { AccessGuard, RolesGuard } from 'src/utils/guards';
       provide: APP_GUARD,
       useClass: RolesGuard,
     },
+    SessionSerializer,
   ],
 })
 export class CatalogModule {}
