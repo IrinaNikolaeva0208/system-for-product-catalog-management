@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { APP_GUARD } from '@nestjs/core';
 import { CatalogService } from './catalog.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Product } from 'src/utils/entities';
@@ -11,7 +10,6 @@ import {
   ApolloFederationDriver,
 } from '@nestjs/apollo';
 import { CatalogResolver } from './catalog.resolver';
-import { AccessGuard, RolesGuard, AuthenticatedGuard } from 'src/utils/guards';
 import { PassportModule } from '@nestjs/passport';
 import { SessionSerializer } from 'src/utils/strategies/session.serializer';
 
@@ -32,14 +30,6 @@ import { SessionSerializer } from 'src/utils/strategies/session.serializer';
     CatalogService,
     CatalogResolver,
     AccessStrategy,
-    {
-      provide: APP_GUARD,
-      useClass: AccessGuard,
-    },
-    {
-      provide: APP_GUARD,
-      useClass: RolesGuard,
-    },
     SessionSerializer,
   ],
 })

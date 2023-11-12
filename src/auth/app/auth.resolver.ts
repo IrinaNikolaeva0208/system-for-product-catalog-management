@@ -7,7 +7,9 @@ import { RefreshGuard } from './guards/refresh.guard';
 import { LocalGuard } from './guards/local.guard';
 import { Role } from 'src/utils/enums/role.enum';
 import { Roles, Public, CurrentUser } from 'src/utils/decorators';
+import { AccessGuard, AuthenticatedGuard, RolesGuard } from 'src/utils/guards';
 
+@UseGuards(AccessGuard, AuthenticatedGuard)
 @Resolver(() => User)
 export class AuthResolver {
   constructor(private readonly authService: AuthService) {}
@@ -26,8 +28,8 @@ export class AuthResolver {
     @Context('res') res: any,
   ) {
     const tokens = await this.authService.login(userInput);
-    res.cookie('access', tokens.accessToken);
-    res.cookie('refresh', tokens.refreshToken);
+    res.cookie('access', tokens.accessToken, { httpOnly: true });
+    res.cookie('refresh', tokens.refreshToken, { httpOnly: true });
     return { message: 'Successfully logged in' };
   }
 
@@ -40,6 +42,7 @@ export class AuthResolver {
     return { message: 'Successfully refreshed' };
   }
 
+  @UseGuards(RolesGuard)
   @Roles(Role.Admin)
   @Mutation(() => User)
   async changeUserRole(

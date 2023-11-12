@@ -4,6 +4,10 @@ import { ValidationPipe } from '@nestjs/common';
 import * as session from 'express-session';
 import * as passport from 'passport';
 
+import { config } from 'dotenv';
+
+config();
+
 async function bootstrap() {
   const app = await NestFactory.create(CatalogModule);
   app.enableCors();
