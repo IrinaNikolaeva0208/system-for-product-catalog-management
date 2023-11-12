@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 import { CatalogService } from './catalog.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Product } from './entities/product.entity';
@@ -10,6 +11,7 @@ import {
   ApolloFederationDriver,
 } from '@nestjs/apollo';
 import { CatalogResolver } from './catalog.resolver';
+import { AccessGuard, RolesGuard } from 'src/utils/guards';
 
 @Module({
   imports: [
@@ -18,10 +20,23 @@ import { CatalogResolver } from './catalog.resolver';
       autoSchemaFile: {
         federation: 2,
       },
+      context: ({ req }) => ({ req }),
     }),
     TypeOrmModule.forRoot(options),
     TypeOrmModule.forFeature([Product]),
   ],
-  providers: [CatalogService, CatalogResolver, AccessStrategy],
+  providers: [
+    CatalogService,
+    CatalogResolver,
+    AccessStrategy,
+    {
+      provide: APP_GUARD,
+      useClass: AccessGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
+  ],
 })
 export class CatalogModule {}

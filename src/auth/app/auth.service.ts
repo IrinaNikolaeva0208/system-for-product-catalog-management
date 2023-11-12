@@ -1,10 +1,15 @@
-import { Injectable, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm/dist';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UserInput } from './dto/user.input';
+import { Role } from 'src/utils/enums/role.enum';
 
 @Injectable()
 export class AuthService {
@@ -18,6 +23,7 @@ export class AuthService {
     if (userWithSameLogin) throw new ConflictException('Login already in use');
     const createdUser = this.userRepository.create({
       ...userDto,
+      role: Role.User,
       password: await bcrypt.hash(userDto.password, +process.env.CRYPT_SALT),
     });
     return await this.userRepository.save(createdUser);
@@ -27,7 +33,9 @@ export class AuthService {
     return await this.userRepository.findOneBy({ login });
   }
 
-  async login(payload: any) {
+  async login(user: UserInput) {
+    const { password, ...payload } = await this.findByLogin(user.login);
+
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(payload, {
         secret: process.env.JWT_SECRET_KEY,
@@ -55,5 +63,12 @@ export class AuthService {
       expiresIn: process.env.SECRET_EXPIRE_TIME,
     });
     return { accessToken };
+  }
+
+  async changeRoleById(id: string, role: Role) {
+    const requiredUser = await this.userRepository.findOneBy({ id });
+    if (!requiredUser) throw new NotFoundException('User not found');
+    requiredUser.role = role;
+    return await this.userRepository.save(requiredUser);
   }
 }

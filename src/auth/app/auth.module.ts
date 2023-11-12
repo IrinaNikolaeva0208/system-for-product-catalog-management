@@ -5,15 +5,18 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { options } from 'src/utils/database/ormconfig';
 import { User } from './entities/user.entity';
 import { JwtModule } from '@nestjs/jwt';
+import { APP_GUARD } from '@nestjs/core';
 import { PassportModule } from '@nestjs/passport';
 import { config } from 'dotenv';
 import { RefreshStrategy } from './strategies/refresh.strategy';
 import { GraphQLModule } from '@nestjs/graphql/dist';
+import { AccessGuard, RolesGuard } from 'src/utils/guards';
 import {
   ApolloFederationDriverConfig,
   ApolloFederationDriver,
 } from '@nestjs/apollo';
 import { LocalStrategy } from './strategies/local.strategy';
+import { AccessStrategy } from 'src/utils/strategies/access.strategy';
 
 config();
 
@@ -48,6 +51,20 @@ config();
     }),
     PassportModule,
   ],
-  providers: [AuthService, AuthResolver, RefreshStrategy, LocalStrategy],
+  providers: [
+    AuthService,
+    AuthResolver,
+    RefreshStrategy,
+    LocalStrategy,
+    AccessStrategy,
+    {
+      provide: APP_GUARD,
+      useClass: AccessGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
+  ],
 })
 export class AuthModule {}
