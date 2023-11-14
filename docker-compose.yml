@@ -16,6 +16,7 @@ services:
       - postgres
       - auth
       - catalog
+      - basket
     command: yarn run start:dev
 
   auth:
@@ -48,6 +49,21 @@ services:
       - postgres
     command: yarn run start:dev
 
+  basket:
+    container_name: basket
+    build:
+      context: .
+      dockerfile: src/basket/Dockerfile
+    restart: always
+    networks:
+      - app-network
+      - broker
+    ports:
+      - ${BASKET_PORT}:${BASKET_PORT}
+    depends_on:
+      - postgres
+    command: yarn run start:dev
+
   postgres:
     container_name: postgres1
     image: postgres:15-alpine
@@ -62,7 +78,7 @@ services:
 networks:
   app-network:
     driver: bridge
-  broker: 
+  broker:
     driver: bridge
 
 volumes:

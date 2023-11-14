@@ -1,0 +1,13 @@
+type Basket {
+  id: ID!
+  products: [String]!
+}
+
+type Query {
+  basket: Basket!
+}
+
+type Mutation {
+  addToBasket(id: ID!): Basket!
+  removeFromBasket(id: ID!): Basket!
+}

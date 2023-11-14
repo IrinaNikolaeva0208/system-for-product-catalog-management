@@ -9,6 +9,7 @@ async function bootstrap() {
     app.useGlobalPipes(new ValidationPipe());
     await app.listen(3000);
   } catch (err) {
+    console.log(err);
     await app.close();
     bootstrap();
   }
