@@ -8,7 +8,7 @@ import {
 } from '@nestjs/graphql';
 import { ParseUUIDPipe } from '@nestjs/common';
 import { BasketService } from './basket.service';
-import { Basket } from './entities/basket.entity';
+import { Basket } from 'src/utils/entities';
 
 @Resolver('Basket')
 export class BasketResolver {
@@ -16,7 +16,7 @@ export class BasketResolver {
 
   @Query()
   basket() {
-    return this.basketService.getAllProducts();
+    return this.basketService.getBasket();
   }
 
   @Mutation()

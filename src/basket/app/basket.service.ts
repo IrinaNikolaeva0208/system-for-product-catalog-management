@@ -1,8 +1,16 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Basket } from 'src/utils/entities';
 
 @Injectable()
 export class BasketService {
-  getAllProducts() {
+  constructor(
+    @InjectRepository(Basket)
+    private readonly basketRepository: Repository<Basket>,
+  ) {}
+
+  getBasket() {
     return 'This action adds a new basket';
   }
 
