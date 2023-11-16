@@ -1,6 +1,15 @@
+type Catalog_Product {
+  id: ID!
+  name: String!
+  description: String!
+  price: Float!
+  category: String!
+  ownerId: String!
+}
+
 type Basket {
   id: ID!
-  products: [String]!
+  products: [Catalog_Product]!
 }
 
 type Query {
