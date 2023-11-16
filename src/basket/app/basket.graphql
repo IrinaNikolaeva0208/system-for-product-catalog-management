@@ -1,0 +1,22 @@
+type Catalog_Product {
+  id: ID!
+  name: String!
+  description: String!
+  price: Float!
+  category: String!
+  ownerId: String!
+}
+
+type Basket {
+  id: ID!
+  products: [Catalog_Product]!
+}
+
+type Query {
+  basket: Basket!
+}
+
+type Mutation {
+  addToBasket(id: ID!): Basket!
+  removeFromBasket(id: ID!): Basket!
+}
