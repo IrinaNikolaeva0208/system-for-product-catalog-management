@@ -1,38 +1,33 @@
-import {
-  Resolver,
-  Query,
-  Mutation,
-  Args,
-  ResolveField,
-  Parent,
-} from '@nestjs/graphql';
-import { ParseUUIDPipe } from '@nestjs/common';
+import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
+import { ParseUUIDPipe, UseGuards } from '@nestjs/common';
 import { BasketService } from './basket.service';
-import { Basket } from 'src/utils/entities';
+import { User } from 'src/utils/entities';
+import { CurrentUser } from 'src/utils/decorators';
+import { AccessGuard, AuthenticatedGuard } from 'src/utils/guards';
 
+@UseGuards(AccessGuard, AuthenticatedGuard)
 @Resolver('Basket')
 export class BasketResolver {
   constructor(private readonly basketService: BasketService) {}
 
   @Query()
-  basket() {
-    return this.basketService.getBasket();
+  basket(@CurrentUser() user: User) {
+    return this.basketService.getBasket(user.id);
   }
 
   @Mutation()
-  addToBasket(@Args('id', ParseUUIDPipe) id: string) {
-    return this.basketService.addProduct(id);
+  addToBasket(
+    @Args('id', ParseUUIDPipe) id: string,
+    @CurrentUser() user: User,
+  ) {
+    return this.basketService.addProduct(id, user.id);
   }
 
   @Mutation()
-  removeFromBasket(@Args('id', ParseUUIDPipe) id: string) {
-    return this.basketService.removeProduct(id);
-  }
-
-  @ResolveField('products')
-  getProducts(@Parent() basket: Basket) {
-    return basket.products.map((item) => {
-      return { __typename: 'Product', id: item };
-    });
+  removeFromBasket(
+    @Args('id', ParseUUIDPipe) id: string,
+    @CurrentUser() user: User,
+  ) {
+    return this.basketService.removeProduct(id, user.id);
   }
 }
