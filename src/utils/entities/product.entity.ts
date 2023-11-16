@@ -1,6 +1,12 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  ManyToMany,
+} from 'typeorm';
 import { ObjectType, Field, ID, Float } from '@nestjs/graphql/dist';
-import { User } from 'src/utils/entities';
+import { User, Basket } from 'src/utils/entities';
 
 @ObjectType()
 @Entity()
@@ -31,4 +37,7 @@ export class Product {
 
   @ManyToOne(() => User, (user) => user.products, { onDelete: 'CASCADE' })
   owner: User;
+
+  @ManyToMany(() => Basket, (basket) => basket.products)
+  baskets: Basket[];
 }

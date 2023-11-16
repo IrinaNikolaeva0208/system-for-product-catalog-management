@@ -6,18 +6,31 @@ import {
   Entity,
   JoinColumn,
   JoinTable,
+  Column,
 } from 'typeorm';
 
 @Entity()
 export class Basket {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @OneToOne(() => User, (user) => user.basket)
   @JoinColumn()
   user: User;
 
-  @ManyToMany(() => Product)
-  @JoinTable()
+  @ManyToMany(() => Product, (product) => product.baskets, {
+    onDelete: 'CASCADE',
+  })
+  @JoinTable({
+    name: 'basket_products',
+    joinColumn: {
+      name: 'productId',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'basketId',
+      referencedColumnName: 'id',
+    },
+  })
   products: Product[];
 }
