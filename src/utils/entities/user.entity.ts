@@ -5,11 +5,12 @@ import {
   OneToMany,
   OneToOne,
 } from 'typeorm';
-import { ObjectType, Field, ID } from '@nestjs/graphql/dist';
+import { ObjectType, Field, ID, Directive } from '@nestjs/graphql/dist';
 import { Role } from 'src/utils/enums/role.enum';
 import { Basket, Product } from 'src/utils/entities';
 
 @ObjectType()
+@Directive('@key(fields: "id")')
 @Entity()
 export class User {
   @Field(() => ID)

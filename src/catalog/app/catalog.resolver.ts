@@ -2,7 +2,14 @@ import { Product, User, DeletedId } from 'src/utils/entities';
 import { CreateProductInput } from './dto/create-product.input';
 import { UpdateProductInput } from './dto/update-product.input';
 import { CatalogService } from './catalog.service';
-import { Resolver, Query, Mutation, Args, ID} from '@nestjs/graphql/dist';
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Args,
+  ID,
+  ResolveReference,
+} from '@nestjs/graphql/dist';
 import { ParseUUIDPipe, UseGuards } from '@nestjs/common';
 import { Roles, Public, CurrentUser } from 'src/utils/decorators';
 import { Role } from 'src/utils/enums/role.enum';
@@ -56,5 +63,10 @@ export class CatalogResolver {
     @CurrentUser() user: User,
   ) {
     return await this.catalogService.delete(id, user);
+  }
+
+  @ResolveReference()
+  resolveReference(reference: { __typename: string; id: string }) {
+    return this.catalogService.getById(reference.id);
   }
 }

@@ -8,7 +8,7 @@ import {
 } from '@nestjs/graphql';
 import { ParseUUIDPipe } from '@nestjs/common';
 import { OrdersService } from './orders.service';
-import { Order, User, Product } from 'src/utils/entities';
+import { Order, User as OrderBuyer, Product as OrderProduct } from './entities';
 
 @Resolver(() => Order)
 export class OrdersResolver {
@@ -19,7 +19,7 @@ export class OrdersResolver {
     return this.ordersService.create(productId);
   }
 
-  @Query(() => [Order], { name: 'orders' })
+  @Query(() => [Order])
   getOrder() {
     return this.ordersService.get();
   }
@@ -29,13 +29,13 @@ export class OrdersResolver {
     return this.ordersService.changeStatus();
   }
 
-  @ResolveField((of) => User)
+  @ResolveField((of) => OrderBuyer)
   buyer(@Parent() order: Order) {
-    return { __typename: 'User', id: post.authorId };
+    return { __typename: 'User', id: order.buyer.id };
   }
 
-  @ResolveField((of) => Product)
+  @ResolveField((of) => OrderProduct)
   product(@Parent() order: Order) {
-    return { __typename: 'User', id: post.authorId };
+    return { __typename: 'Product', id: order.product.id };
   }
 }

@@ -2,7 +2,13 @@ import { UseGuards, ParseUUIDPipe } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { User, ResponseMessage } from 'src/utils/entities';
 import { UserInput } from './dto/user.input';
-import { Resolver, Mutation, Args, Context } from '@nestjs/graphql/dist';
+import {
+  Resolver,
+  Mutation,
+  Args,
+  Context,
+  ResolveReference,
+} from '@nestjs/graphql/dist';
 import { RefreshGuard } from './guards/refresh.guard';
 import { LocalGuard } from './guards/local.guard';
 import { Role } from 'src/utils/enums/role.enum';
@@ -50,5 +56,10 @@ export class AuthResolver {
     @Args('role') role: Role,
   ) {
     return await this.authService.changeRoleById(id, role);
+  }
+
+  @ResolveReference()
+  async resolveReference(reference: { __typename: string; id: string }) {
+    return await this.authService.findById(reference.id);
   }
 }

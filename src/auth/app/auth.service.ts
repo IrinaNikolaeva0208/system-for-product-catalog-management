@@ -66,9 +66,13 @@ export class AuthService {
   }
 
   async changeRoleById(id: string, role: Role) {
-    const requiredUser = await this.userRepository.findOneBy({ id });
+    const requiredUser = await this.findById(id);
     if (!requiredUser) throw new NotFoundException('User not found');
     requiredUser.role = role;
     return await this.userRepository.save(requiredUser);
+  }
+
+  async findById(id: string) {
+    return await this.userRepository.findOneBy({ id });
   }
 }

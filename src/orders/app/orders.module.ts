@@ -8,7 +8,9 @@ import {
 } from '@nestjs/apollo';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { options } from 'src/utils/database/ormconfig';
-import { Order, User, Product } from 'src/utils/entities';
+import { User as OrderBuyer, Order, Product as OrderProduct } from './entities';
+import { BuyerResolver } from './buyer.resolver';
+import { ProductResolver } from './product.resolver';
 
 @Module({
   imports: [
@@ -20,11 +22,11 @@ import { Order, User, Product } from 'src/utils/entities';
         federation: 2,
       },
       buildSchemaOptions: {
-        orphanedTypes: [User, Product],
+        orphanedTypes: [OrderBuyer, OrderProduct],
       },
       context: ({ req }) => ({ req }),
     }),
   ],
-  providers: [OrdersResolver, OrdersService],
+  providers: [OrdersResolver, OrdersService, BuyerResolver, ProductResolver],
 })
 export class OrdersModule {}

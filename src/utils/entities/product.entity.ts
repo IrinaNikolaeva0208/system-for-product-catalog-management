@@ -5,10 +5,11 @@ import {
   ManyToOne,
   ManyToMany,
 } from 'typeorm';
-import { ObjectType, Field, ID, Float } from '@nestjs/graphql/dist';
+import { ObjectType, Field, ID, Float, Directive } from '@nestjs/graphql/dist';
 import { User, Basket } from 'src/utils/entities';
 
 @ObjectType()
+@Directive('@key(fields: "id")')
 @Entity()
 export class Product {
   @Field(() => ID)

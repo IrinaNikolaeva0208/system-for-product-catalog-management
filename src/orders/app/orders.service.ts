@@ -11,4 +11,8 @@ export class OrdersService {
   changeStatus() {
     return `This action returns all orders`;
   }
+
+  getUserOrders(id: string) {}
+
+  getProductOrders(id: string) {}
 }
