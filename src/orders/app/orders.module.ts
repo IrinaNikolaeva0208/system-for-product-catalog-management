@@ -8,7 +8,7 @@ import {
 } from '@nestjs/apollo';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { options } from 'src/utils/database/ormconfig';
-import { Order } from 'src/utils/entities';
+import { Order, User, Product } from 'src/utils/entities';
 
 @Module({
   imports: [
@@ -18,6 +18,9 @@ import { Order } from 'src/utils/entities';
       driver: ApolloFederationDriver,
       autoSchemaFile: {
         federation: 2,
+      },
+      buildSchemaOptions: {
+        orphanedTypes: [User, Product],
       },
       context: ({ req }) => ({ req }),
     }),
