@@ -6,9 +6,14 @@ import {
   ApolloFederationDriver,
   ApolloFederationDriverConfig,
 } from '@nestjs/apollo';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { options } from 'src/utils/database/ormconfig';
+import { Order } from 'src/utils/entities';
 
 @Module({
   imports: [
+    TypeOrmModule.forRoot(options),
+    TypeOrmModule.forFeature([Order]),
     GraphQLModule.forRoot<ApolloFederationDriverConfig>({
       driver: ApolloFederationDriver,
       autoSchemaFile: {
