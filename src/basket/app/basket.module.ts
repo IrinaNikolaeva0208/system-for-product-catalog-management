@@ -28,7 +28,7 @@ import { SessionSerializer } from 'src/utils/strategies/session.serializer';
         transport: Transport.KAFKA,
         options: {
           client: {
-            clientId: 'catalog',
+            clientId: 'catalog-basket',
             brokers: ['kafka:9092'],
           },
           consumer: {

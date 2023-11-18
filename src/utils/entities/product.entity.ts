@@ -4,11 +4,13 @@ import {
   PrimaryGeneratedColumn,
   ManyToOne,
   ManyToMany,
+  OneToMany,
 } from 'typeorm';
-import { ObjectType, Field, ID, Float } from '@nestjs/graphql/dist';
-import { User, Basket } from 'src/utils/entities';
+import { ObjectType, Field, ID, Float, Directive } from '@nestjs/graphql/dist';
+import { User, Basket, Order } from 'src/utils/entities';
 
 @ObjectType()
+@Directive('@key(fields: "id")')
 @Entity()
 export class Product {
   @Field(() => ID)
@@ -40,4 +42,7 @@ export class Product {
 
   @ManyToMany(() => Basket, (basket) => basket.products)
   baskets: Basket[];
+
+  @OneToMany(() => Order, (order) => order.product)
+  orders: Order[];
 }

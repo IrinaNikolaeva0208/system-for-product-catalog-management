@@ -27,6 +27,10 @@ config();
               name: 'basket',
               url: `http://basket:${process.env.BASKET_PORT}/graphql`,
             },
+            {
+              name: 'orders',
+              url: `http://orders:${process.env.ORDERS_PORT}/graphql`,
+            },
           ],
         }),
       },
