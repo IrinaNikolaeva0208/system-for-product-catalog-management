@@ -2,17 +2,21 @@ import {
   Injectable,
   NotFoundException,
   ForbiddenException,
+  Inject,
+  OnModuleInit,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Order } from 'src/utils/entities';
+import { Order, Product } from 'src/utils/entities';
 import { OrderStatus } from 'src/utils/enums/orderStatus.enum';
+import { ClientKafka, RpcException } from '@nestjs/microservices';
 
 @Injectable()
-export class OrdersService {
+export class OrdersService implements OnModuleInit {
   constructor(
     @InjectRepository(Order)
     private readonly ordersRepository: Repository<Order>,
+    @Inject('CATALOG_MICROSERVICE') private readonly catalogClient: ClientKafka,
   ) {}
 
   async getById(id: string, userId: string) {
@@ -40,6 +44,15 @@ export class OrdersService {
   }
 
   async create(productId: string, userId: string) {
+    const requiredProduct = await new Promise<any>((resolve, reject) =>
+      this.catalogClient.send('product.byId', productId).subscribe(
+        (product: Product) => {
+          resolve(product);
+        },
+        (err) => reject(new RpcException(err.response)),
+      ),
+    );
+
     const newOrder = this.ordersRepository.create({
       buyer: { id: userId },
       product: { id: productId },
@@ -74,5 +87,9 @@ export class OrdersService {
       where: { product: { id } },
       relations: { buyer: true, product: true },
     });
+  }
+
+  onModuleInit() {
+    this.catalogClient.subscribeToResponseOf('product.byId');
   }
 }

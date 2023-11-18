@@ -17,6 +17,7 @@ services:
       - auth
       - catalog
       - basket
+      - orders
     command: yarn run start:dev
 
   auth:
@@ -74,6 +75,7 @@ services:
     restart: always
     networks:
       - app-network
+      - broker
     ports:
       - ${ORDERS_PORT}:${ORDERS_PORT}
     depends_on:
