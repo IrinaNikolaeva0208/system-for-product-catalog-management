@@ -8,9 +8,12 @@ import {
 } from '@nestjs/apollo';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { options } from 'src/utils/database/ormconfig';
-import { User as OrderBuyer, Order, Product as OrderProduct } from './entities';
+import { User as OrderBuyer, Product as OrderProduct } from './entities';
+import { Order } from 'src/utils/entities';
 import { BuyerResolver } from './buyer.resolver';
 import { ProductResolver } from './product.resolver';
+import { SessionSerializer } from 'src/utils/strategies/session.serializer';
+import { AccessStrategy } from 'src/utils/strategies/access.strategy';
 
 @Module({
   imports: [
@@ -27,6 +30,13 @@ import { ProductResolver } from './product.resolver';
       context: ({ req }) => ({ req }),
     }),
   ],
-  providers: [OrdersResolver, OrdersService, BuyerResolver, ProductResolver],
+  providers: [
+    OrdersResolver,
+    OrdersService,
+    BuyerResolver,
+    ProductResolver,
+    SessionSerializer,
+    AccessStrategy,
+  ],
 })
 export class OrdersModule {}

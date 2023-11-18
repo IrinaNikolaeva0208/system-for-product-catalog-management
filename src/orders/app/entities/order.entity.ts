@@ -12,25 +12,18 @@ import {
 import { User as OrderBuyer } from './orderBuyer.entity';
 import { Product as OrderProduct } from './orderProduct.entity';
 
-@Entity()
 @ObjectType()
 @Directive('@key(fields: "id")')
 export class Order {
   @Field(() => ID)
-  @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => User)
-  @JoinColumn()
   @Field((type) => OrderBuyer)
   buyer: OrderBuyer;
 
-  @ManyToOne(() => Product)
-  @JoinColumn()
   @Field((type) => OrderProduct)
   product: OrderProduct;
 
-  @Column()
   @Field()
   status: OrderStatus;
 }
