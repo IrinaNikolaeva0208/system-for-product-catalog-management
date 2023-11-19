@@ -10,6 +10,8 @@ COPY src/auth/app ./src/app
 
 COPY src/utils ./src/utils
 
+COPY migrations/ ./src/migrations/
+
 COPY .env tsconfig.json src/auth/nest-cli.json ./
 
 RUN yarn run build

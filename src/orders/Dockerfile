@@ -10,6 +10,8 @@ COPY src/orders/app ./src/app
 
 COPY src/utils ./src/utils
 
+COPY migrations/ ./src/migrations/
+
 COPY .env tsconfig.json src/orders/nest-cli.json ./
 
 RUN yarn run build
