@@ -12,6 +12,7 @@ import {
 import { CatalogResolver } from './catalog.resolver';
 import { PassportModule } from '@nestjs/passport';
 import { SessionSerializer } from 'src/utils/strategies/session.serializer';
+import { formatError } from 'src/utils/helpers/formatError';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { SessionSerializer } from 'src/utils/strategies/session.serializer';
         federation: 2,
       },
       context: ({ req }) => ({ req }),
+      formatError,
     }),
     TypeOrmModule.forRoot(options),
     TypeOrmModule.forFeature([Product]),
