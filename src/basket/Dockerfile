@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY src/basket/package.json .
 
-RUN yarn install
+RUN yarn install --network-timeout 100000
 
 COPY src/basket/app ./src/app
 

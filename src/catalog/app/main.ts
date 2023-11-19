@@ -4,6 +4,8 @@ import { ValidationPipe } from '@nestjs/common';
 import { Transport } from '@nestjs/microservices';
 import * as session from 'express-session';
 import * as passport from 'passport';
+import { WinstonModule } from 'nest-winston';
+import { ApplicationLogger } from 'src/utils/logger';
 
 import { config } from 'dotenv';
 import { MicroserviceModule } from './microservice.module';
@@ -11,7 +13,9 @@ import { MicroserviceModule } from './microservice.module';
 config();
 
 async function bootstrap() {
-  const app = await NestFactory.create(CatalogModule);
+  const app = await NestFactory.create(CatalogModule, {
+    logger: WinstonModule.createLogger({ instance: ApplicationLogger }),
+  });
   app.enableCors();
   app.useGlobalPipes(new ValidationPipe());
   app.use(

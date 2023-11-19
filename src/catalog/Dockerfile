@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY src/catalog/package.json .
 
-RUN yarn install
+RUN yarn install --network-timeout 100000
 
 COPY src/catalog/app ./src/app
 

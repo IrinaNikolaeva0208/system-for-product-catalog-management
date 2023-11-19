@@ -12,6 +12,7 @@ import { Basket } from 'src/utils/entities';
 import { options } from 'src/utils/database/ormconfig';
 import { AccessStrategy } from 'src/utils/strategies/access.strategy';
 import { SessionSerializer } from 'src/utils/strategies/session.serializer';
+import { formatError } from 'src/utils/helpers/formatError';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { SessionSerializer } from 'src/utils/strategies/session.serializer';
       driver: ApolloFederationDriver,
       typePaths: ['dist/app/basket.graphql'],
       context: ({ req }) => ({ req }),
+      formatError,
     }),
     TypeOrmModule.forRoot(options),
     TypeOrmModule.forFeature([Basket]),

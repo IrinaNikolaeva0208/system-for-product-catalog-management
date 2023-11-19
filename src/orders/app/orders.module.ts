@@ -15,6 +15,7 @@ import { ProductResolver } from './product.resolver';
 import { SessionSerializer } from 'src/utils/strategies/session.serializer';
 import { AccessStrategy } from 'src/utils/strategies/access.strategy';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { formatError } from 'src/utils/helpers/formatError';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
         orphanedTypes: [OrderBuyer, OrderProduct],
       },
       context: ({ req }) => ({ req }),
+      formatError,
     }),
   ],
   providers: [

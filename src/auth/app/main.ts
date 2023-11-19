@@ -5,11 +5,15 @@ import * as cookieParser from 'cookie-parser';
 import * as session from 'express-session';
 import * as passport from 'passport';
 import { config } from 'dotenv';
+import { WinstonModule } from 'nest-winston';
+import { ApplicationLogger } from 'src/utils/logger';
 
 config();
 
 async function bootstrap() {
-  const app = await NestFactory.create(AuthModule);
+  const app = await NestFactory.create(AuthModule, {
+    logger: WinstonModule.createLogger({ instance: ApplicationLogger }),
+  });
   app.enableCors();
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalPipes(new ValidationPipe());

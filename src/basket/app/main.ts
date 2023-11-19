@@ -3,13 +3,17 @@ import { BasketModule } from './basket.module';
 import { ValidationPipe } from '@nestjs/common';
 import * as session from 'express-session';
 import * as passport from 'passport';
+import { WinstonModule } from 'nest-winston';
+import { ApplicationLogger } from 'src/utils/logger';
 
 import { config } from 'dotenv';
 
 config();
 
 async function bootstrap() {
-  const app = await NestFactory.create(BasketModule);
+  const app = await NestFactory.create(BasketModule, {
+    logger: WinstonModule.createLogger({ instance: ApplicationLogger }),
+  });
   app.enableCors();
   app.useGlobalPipes(new ValidationPipe());
   app.use(

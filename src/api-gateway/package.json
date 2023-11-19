@@ -41,13 +41,15 @@
     "dotenv": "^16.3.1",
     "graphql": "^16.8.1",
     "kafkajs": "^2.2.4",
+    "nest-winston": "^1.9.4",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
     "pg": "^8.11.3",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
-    "typeorm": "^0.3.17"
+    "typeorm": "^0.3.17",
+    "winston": "^3.11.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",
@@ -59,6 +61,7 @@
     "@types/node": "^20.3.1",
     "@types/passport-jwt": "^3.0.12",
     "@types/supertest": "^2.0.12",
+    "@types/winston": "^2.4.4",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "eslint": "^8.42.0",

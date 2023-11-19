@@ -16,6 +16,7 @@ import {
 import { LocalStrategy } from './strategies/local.strategy';
 import { AccessStrategy } from 'src/utils/strategies/access.strategy';
 import { SessionSerializer } from 'src/utils/strategies/session.serializer';
+import { formatError } from 'src/utils/helpers/formatError';
 
 config();
 
@@ -26,20 +27,7 @@ config();
       autoSchemaFile: {
         federation: 2,
       },
-      formatError: (error) => {
-        const originalError = error.extensions?.originalError as any;
-
-        if (!originalError) {
-          return {
-            message: error.message,
-            code: error.extensions?.code,
-          };
-        }
-        return {
-          message: originalError.message,
-          code: error.extensions?.code,
-        };
-      },
+      formatError,
       context: ({ req, res }) => ({ req, res }),
     }),
     TypeOrmModule.forRoot(options),

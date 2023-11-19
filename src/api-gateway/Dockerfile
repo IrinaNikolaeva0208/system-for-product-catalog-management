@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY src/api-gateway/package.json .
 
-RUN yarn install
+RUN yarn install --network-timeout 100000
 
 COPY src/api-gateway/app ./src/app
 
