@@ -13,9 +13,17 @@ import { options } from 'src/utils/database/ormconfig';
 import { AccessStrategy } from 'src/utils/strategies/access.strategy';
 import { SessionSerializer } from 'src/utils/strategies/session.serializer';
 import { formatError } from 'src/utils/helpers/formatError';
+import { CqrsModule } from '@nestjs/cqrs';
+import {
+  AddProductToBasketHandler,
+  CreateBasketHandler,
+  RemoveProductFromBasketHandler,
+  GetBasketHandler,
+} from './handlers';
 
 @Module({
   imports: [
+    CqrsModule,
     GraphQLModule.forRoot<ApolloFederationDriverConfig>({
       driver: ApolloFederationDriver,
       typePaths: ['dist/app/basket.graphql'],
@@ -40,6 +48,15 @@ import { formatError } from 'src/utils/helpers/formatError';
       },
     ]),
   ],
-  providers: [BasketResolver, BasketService, AccessStrategy, SessionSerializer],
+  providers: [
+    BasketResolver,
+    BasketService,
+    AccessStrategy,
+    SessionSerializer,
+    AddProductToBasketHandler,
+    CreateBasketHandler,
+    RemoveProductFromBasketHandler,
+    GetBasketHandler,
+  ],
 })
 export class BasketModule {}
