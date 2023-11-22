@@ -120,6 +120,16 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     networks:
       - broker
+  
+  redis:
+    container_name: redis
+    image: redis
+    ports:
+      - ${REDIS_PORT}:${REDIS_PORT}
+    volumes:
+      - redis:/data
+    networks:
+      - app-network
 
 networks:
   app-network:
@@ -129,5 +139,7 @@ networks:
 
 volumes:
   app-volume:
+  redis:
+    driver: local
 
 
