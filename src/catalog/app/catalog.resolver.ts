@@ -14,39 +14,40 @@ import { ParseUUIDPipe, UseGuards } from '@nestjs/common';
 import { Roles, Public, CurrentUser } from 'src/utils/decorators';
 import { Role } from 'src/utils/enums/role.enum';
 import { AccessGuard, AuthenticatedGuard, RolesGuard } from 'src/utils/guards';
+import { CacheControl } from 'nestjs-gql-cache-control';
 
 @UseGuards(AccessGuard, AuthenticatedGuard)
-@Resolver(() => Product)
+@Resolver('Product')
 export class CatalogResolver {
   constructor(private readonly catalogService: CatalogService) {}
 
   @Public()
-  @Query(() => [Product])
-  async getAllProducts() {
-    return await this.catalogService.getAll();
+  @Query()
+  @CacheControl({ inheritMaxAge: true })
+  getAllProducts() {
+    return this.catalogService.getAll();
   }
 
   @Public()
-  @Query(() => Product)
-  async getProductById(
-    @Args('id', { type: () => ID }, ParseUUIDPipe) id: string,
-  ) {
-    return await this.catalogService.getById(id);
+  @Query()
+  @CacheControl({ inheritMaxAge: true })
+  getProductById(@Args('id', { type: () => ID }, ParseUUIDPipe) id: string) {
+    return this.catalogService.getById(id);
   }
 
   @UseGuards(RolesGuard)
   @Roles(Role.Seller)
-  @Mutation(() => Product)
-  async createProduct(
+  @Mutation()
+  createProduct(
     @Args('createProductInput') productInput: CreateProductInput,
     @CurrentUser() user: User,
   ) {
-    return await this.catalogService.create(productInput, user);
+    return this.catalogService.create(productInput, user);
   }
 
   @UseGuards(RolesGuard)
   @Roles(Role.Seller)
-  @Mutation(() => Product)
+  @Mutation()
   async updateProduct(
     @Args('id', { type: () => ID }, ParseUUIDPipe) id: string,
     @Args('updateProductInput') productInput: UpdateProductInput,
@@ -57,7 +58,7 @@ export class CatalogResolver {
 
   @UseGuards(RolesGuard)
   @Roles(Role.Seller, Role.Admin)
-  @Mutation(() => DeletedId)
+  @Mutation()
   async deleteProduct(
     @Args('id', { type: () => ID }, ParseUUIDPipe) id: string,
     @CurrentUser() user: User,
