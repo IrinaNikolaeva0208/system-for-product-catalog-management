@@ -20,12 +20,25 @@ import {
   RemoveProductFromBasketHandler,
   GetBasketHandler,
 } from './handlers';
+import { ApolloServerPluginCacheControl } from '@apollo/server/plugin/cacheControl';
+import responseCachePlugin from '@apollo/server-plugin-response-cache';
+import Keyv = require('keyv');
+import { KeyvAdapter } from '@apollo/utils.keyvadapter';
 
 @Module({
   imports: [
     CqrsModule,
     GraphQLModule.forRoot<ApolloFederationDriverConfig>({
       driver: ApolloFederationDriver,
+      cache: new KeyvAdapter(
+        new Keyv(`redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`),
+      ),
+      plugins: [
+        ApolloServerPluginCacheControl({
+          defaultMaxAge: +process.env.REDIS_DEFAULT_TTL,
+        }),
+        responseCachePlugin(),
+      ],
       typePaths: ['dist/app/basket.graphql'],
       context: ({ req }) => ({ req }),
       formatError,

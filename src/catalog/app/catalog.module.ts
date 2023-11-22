@@ -13,14 +13,20 @@ import { CatalogResolver } from './catalog.resolver';
 import { PassportModule } from '@nestjs/passport';
 import { SessionSerializer } from 'src/utils/strategies/session.serializer';
 import { formatError } from 'src/utils/helpers/formatError';
+import { ApolloServerPluginCacheControl } from '@apollo/server/plugin/cacheControl';
+import responseCachePlugin from '@apollo/server-plugin-response-cache';
 
 @Module({
   imports: [
     GraphQLModule.forRoot<ApolloFederationDriverConfig>({
       driver: ApolloFederationDriver,
-      autoSchemaFile: {
-        federation: 2,
-      },
+      plugins: [
+        ApolloServerPluginCacheControl({
+          defaultMaxAge: +process.env.REDIS_DEFAULT_TTL,
+        }),
+        responseCachePlugin(),
+      ],
+      typePaths: ['dist/app/catalog.graphql'],
       context: ({ req }) => ({ req }),
       formatError,
     }),

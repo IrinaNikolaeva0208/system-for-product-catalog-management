@@ -8,7 +8,6 @@ import {
 } from '@nestjs/apollo';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { options } from 'src/utils/database/ormconfig';
-import { User as OrderBuyer, Product as OrderProduct } from './entities';
 import { Order } from 'src/utils/entities';
 import { BuyerResolver } from './buyer.resolver';
 import { ProductResolver } from './product.resolver';
@@ -16,6 +15,8 @@ import { SessionSerializer } from 'src/utils/strategies/session.serializer';
 import { AccessStrategy } from 'src/utils/strategies/access.strategy';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { formatError } from 'src/utils/helpers/formatError';
+import { ApolloServerPluginCacheControl } from '@apollo/server/plugin/cacheControl';
+import responseCachePlugin from '@apollo/server-plugin-response-cache';
 
 @Module({
   imports: [
@@ -38,12 +39,13 @@ import { formatError } from 'src/utils/helpers/formatError';
     TypeOrmModule.forFeature([Order]),
     GraphQLModule.forRoot<ApolloFederationDriverConfig>({
       driver: ApolloFederationDriver,
-      autoSchemaFile: {
-        federation: 2,
-      },
-      buildSchemaOptions: {
-        orphanedTypes: [OrderBuyer, OrderProduct],
-      },
+      typePaths: ['dist/app/order.graphql'],
+      plugins: [
+        ApolloServerPluginCacheControl({
+          defaultMaxAge: +process.env.REDIS_DEFAULT_TTL,
+        }),
+        responseCachePlugin(),
+      ],
       context: ({ req }) => ({ req }),
       formatError,
     }),

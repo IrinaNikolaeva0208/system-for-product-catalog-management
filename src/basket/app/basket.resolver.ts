@@ -4,6 +4,7 @@ import { BasketService } from './basket.service';
 import { User } from 'src/utils/entities';
 import { CurrentUser } from 'src/utils/decorators';
 import { AccessGuard, AuthenticatedGuard } from 'src/utils/guards';
+import { CacheControl } from 'nestjs-gql-cache-control';
 
 @UseGuards(AccessGuard, AuthenticatedGuard)
 @Resolver('Basket')
@@ -11,6 +12,7 @@ export class BasketResolver {
   constructor(private readonly basketService: BasketService) {}
 
   @Query()
+  @CacheControl({ inheritMaxAge: true })
   basket(@CurrentUser() user: User) {
     return this.basketService.getBasket(user.id);
   }
