@@ -1,16 +1,7 @@
 import { ObjectType, Field, ID, Directive } from '@nestjs/graphql';
-import { User } from 'src/utils/entities';
-import { OrderStatus } from 'src/utils/enums/orderStatus.enum';
-import { Product } from 'src/utils/entities';
-import {
-  PrimaryGeneratedColumn,
-  Column,
-  ManyToOne,
-  JoinColumn,
-  Entity,
-} from 'typeorm';
 import { User as OrderBuyer } from './orderBuyer.entity';
 import { Product as OrderProduct } from './orderProduct.entity';
+import { PaymentStatus } from 'src/utils/enums/paymentStatus.enum';
 
 @ObjectType()
 @Directive('@key(fields: "id")')
@@ -25,5 +16,5 @@ export class Order {
   product: OrderProduct;
 
   @Field()
-  status: OrderStatus;
+  status: PaymentStatus;
 }

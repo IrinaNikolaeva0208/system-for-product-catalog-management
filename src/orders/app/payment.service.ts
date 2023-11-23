@@ -1,0 +1,33 @@
+import {
+  Injectable,
+  Logger,
+  UnprocessableEntityException,
+} from '@nestjs/common';
+import { Stripe } from 'stripe';
+import * as util from 'util';
+import { InjectStripe } from 'nestjs-stripe';
+
+@Injectable()
+export class StripeService {
+  constructor(@InjectStripe() private readonly stripeClient: Stripe) {}
+
+  async createPaymentIntent(
+    orderId: string,
+    totalAmount: number,
+  ): Promise<Stripe.PaymentIntent> {
+    try {
+      const paymentIntentParams: Stripe.PaymentIntentCreateParams = {
+        amount: Number(totalAmount),
+        currency: process.env.STRIPE_CURRENCY,
+        payment_method_types: ['card'],
+        metadata: { orderId },
+      };
+
+      return await this.stripeClient.paymentIntents.create(paymentIntentParams);
+    } catch (error) {
+      throw new UnprocessableEntityException(
+        'The payment intent could not be created',
+      );
+    }
+  }
+}

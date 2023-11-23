@@ -6,14 +6,13 @@ import {
   Parent,
   ResolveField,
 } from '@nestjs/graphql';
-import { ParseUUIDPipe, UseGuards, ParseEnumPipe } from '@nestjs/common';
+import { ParseUUIDPipe, UseGuards } from '@nestjs/common';
 import { OrdersService } from './orders.service';
-import { Order, User as OrderBuyer, Product as OrderProduct } from './entities';
+import { Order } from './entities';
 import { AccessGuard, AuthenticatedGuard, RolesGuard } from 'src/utils/guards';
 import { CurrentUser, Roles } from 'src/utils/decorators';
 import { Role } from 'src/utils/enums/role.enum';
 import { User } from 'src/utils/entities';
-import { OrderStatus } from 'src/utils/enums/orderStatus.enum';
 import { CacheControl } from 'nestjs-gql-cache-control';
 
 @UseGuards(AccessGuard, AuthenticatedGuard)
@@ -50,17 +49,6 @@ export class OrdersResolver {
     @CurrentUser() user: User,
   ) {
     return this.ordersService.getProductOrdersIfOwner(id, user.id);
-  }
-
-  @UseGuards(RolesGuard)
-  @Roles(Role.Seller)
-  @Mutation()
-  changeOrderStatus(
-    @Args('id', ParseUUIDPipe) id: string,
-    @Args('status', new ParseEnumPipe(OrderStatus)) status: OrderStatus,
-    @CurrentUser() user: User,
-  ) {
-    return this.ordersService.changeStatus(id, status, user.id);
   }
 
   @ResolveField('buyer')

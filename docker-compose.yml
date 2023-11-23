@@ -131,6 +131,13 @@ services:
     networks:
       - app-network
 
+  stripe-cli:
+    image: stripe/stripe-cli
+    container_name: stripe-cli
+    command: "listen --api-key ${STRIPE_API_KEY} --forward-to orders:${ORDERS_PORT}/stripe_webhook/"
+    networks:
+      - app-network
+
 networks:
   app-network:
     driver: bridge
