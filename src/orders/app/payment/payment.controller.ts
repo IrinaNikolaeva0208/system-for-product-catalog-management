@@ -1,5 +1,5 @@
 import { Controller, Post, Body } from '@nestjs/common';
-import { OrdersService } from '../orders.service';
+import { OrdersService } from '../services/orders.service';
 import { Stripe } from 'stripe';
 
 @Controller()

@@ -7,7 +7,7 @@ import {
   ResolveField,
 } from '@nestjs/graphql';
 import { ParseUUIDPipe, UseGuards } from '@nestjs/common';
-import { OrdersService } from '../orders.service';
+import { OrdersService } from '../services/orders.service';
 import { Order } from '../entities';
 import { AccessGuard, AuthenticatedGuard, RolesGuard } from 'src/utils/guards';
 import { CurrentUser, Roles } from 'src/utils/decorators';

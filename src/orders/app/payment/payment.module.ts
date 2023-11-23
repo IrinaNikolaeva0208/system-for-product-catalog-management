@@ -4,8 +4,7 @@ import { options } from 'src/utils/database/ormconfig';
 import { Order } from 'src/utils/entities';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { PaymentController } from './payment.controller';
-import { OrdersService } from '../orders.service';
-import { StripeService } from './payment.service';
+import { OrdersService, ProductService, StripeService } from '../services';
 import { StripeModule } from 'nestjs-stripe';
 import { env } from 'src/utils/env';
 
@@ -34,7 +33,7 @@ import { env } from 'src/utils/env';
     ]),
   ],
   controllers: [PaymentController],
-  providers: [OrdersService, StripeService],
-  exports: [StripeService, OrdersService],
+  providers: [OrdersService, StripeService, ProductService],
+  exports: [StripeService, OrdersService, ProductService],
 })
 export class PaymentModule {}
