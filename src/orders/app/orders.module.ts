@@ -17,6 +17,13 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
 import { formatError } from 'src/utils/helpers/formatError';
 import { ApolloServerPluginCacheControl } from '@apollo/server/plugin/cacheControl';
 import responseCachePlugin from '@apollo/server-plugin-response-cache';
+import { StripeModule } from 'nestjs-stripe';
+
+import { config } from 'dotenv';
+import { StripeService } from './payment.service';
+import { PaymentController } from './payment.controller';
+
+config();
 
 @Module({
   imports: [
@@ -49,7 +56,12 @@ import responseCachePlugin from '@apollo/server-plugin-response-cache';
       context: ({ req }) => ({ req }),
       formatError,
     }),
+    StripeModule.forRoot({
+      apiKey: process.env.STRIPE_API_KEY,
+      apiVersion: '2023-10-16',
+    }),
   ],
+  controllers: [PaymentController],
   providers: [
     OrdersResolver,
     OrdersService,
@@ -57,6 +69,7 @@ import responseCachePlugin from '@apollo/server-plugin-response-cache';
     ProductResolver,
     SessionSerializer,
     AccessStrategy,
+    StripeService,
   ],
 })
 export class OrdersModule {}

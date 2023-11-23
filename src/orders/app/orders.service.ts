@@ -2,14 +2,17 @@ import {
   Injectable,
   NotFoundException,
   ForbiddenException,
+  UnprocessableEntityException,
   Inject,
   OnModuleInit,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Order, Product } from 'src/utils/entities';
-import { OrderStatus } from 'src/utils/enums/orderStatus.enum';
+import { PaymentStatus } from 'src/utils/enums/paymentStatus.enum';
 import { ClientKafka, RpcException } from '@nestjs/microservices';
+import { StripeService } from './payment.service';
+import Stripe from 'stripe';
 
 @Injectable()
 export class OrdersService implements OnModuleInit {
@@ -17,6 +20,7 @@ export class OrdersService implements OnModuleInit {
     @InjectRepository(Order)
     private readonly ordersRepository: Repository<Order>,
     @Inject('CATALOG_MICROSERVICE') private readonly catalogClient: ClientKafka,
+    private stripeService: StripeService,
   ) {}
 
   async getById(id: string, userId: string) {
@@ -56,23 +60,54 @@ export class OrdersService implements OnModuleInit {
     const newOrder = this.ordersRepository.create({
       buyer: { id: userId },
       product: { id: productId },
-      status: OrderStatus.PaymentRequired,
+      paymentStatus: PaymentStatus.Created,
     });
-    return await this.ordersRepository.save(newOrder);
+
+    await this.ordersRepository.save(newOrder);
+
+    const createdOrder = await this.getById(newOrder.id, userId);
+    const paymentIntent = await this.stripeService.createPaymentIntent(
+      createdOrder.id,
+      createdOrder.product.price,
+    );
+
+    return { clientSecret: paymentIntent.client_secret };
   }
 
-  async changeStatus(id: string, status: OrderStatus, userId: string) {
-    const requiredOrder = await this.ordersRepository.findOne({
-      where: { id },
-      relations: { buyer: true, product: true },
+  async changePaymentStatus(event: Stripe.Event) {
+    const orderId = event.data.object['metadata'].orderId;
+
+    const order = await this.ordersRepository.findOne({
+      where: { id: orderId },
     });
 
-    if (!requiredOrder) throw new NotFoundException('Order not found');
-    if (requiredOrder.product.ownerId != userId)
-      throw new ForbiddenException('Forbidden resource');
+    switch (event.type) {
+      case 'payment_intent.succeeded':
+        order.paymentStatus = PaymentStatus.Succeded;
+        break;
 
-    requiredOrder.status = status;
-    return await this.ordersRepository.save(requiredOrder);
+      case 'payment_intent.processing':
+        order.paymentStatus = PaymentStatus.Processing;
+        break;
+
+      case 'payment_intent.payment_failed':
+        order.paymentStatus = PaymentStatus.Failed;
+        break;
+
+      default:
+        order.paymentStatus = PaymentStatus.Created;
+        break;
+    }
+
+    const updateResult = await this.ordersRepository.update(order.id, order);
+
+    if (updateResult.affected === 1) {
+      return `Record successfully updated with Payment Status ${order.paymentStatus}`;
+    } else {
+      throw new UnprocessableEntityException(
+        'The payment was not successfully updated',
+      );
+    }
   }
 
   async getUserOrders(id: string) {
