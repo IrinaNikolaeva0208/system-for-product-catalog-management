@@ -1,12 +1,10 @@
 import { Module } from '@nestjs/common';
-import { OrdersResolver } from './orders.resolver';
 import { GraphQLModule } from '@nestjs/graphql';
 import {
   ApolloFederationDriver,
   ApolloFederationDriverConfig,
 } from '@nestjs/apollo';
-import { BuyerResolver } from './buyer.resolver';
-import { ProductResolver } from './product.resolver';
+import { BuyerResolver, OrdersResolver, ProductResolver } from './resolvers';
 import { SessionSerializer } from 'src/utils/strategies/session.serializer';
 import { AccessStrategy } from 'src/utils/strategies/access.strategy';
 import { formatError } from 'src/utils/helpers/formatError';
