@@ -66,12 +66,12 @@ export class OrdersService implements OnModuleInit {
     await this.ordersRepository.save(newOrder);
 
     const createdOrder = await this.getById(newOrder.id, userId);
-    const paymentIntent = await this.stripeService.createPaymentIntent(
+    await this.stripeService.createPaymentIntent(
       createdOrder.id,
       createdOrder.product.price,
     );
 
-    return { clientSecret: paymentIntent.client_secret };
+    return createdOrder;
   }
 
   async changePaymentStatus(event: Stripe.Event) {

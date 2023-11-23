@@ -19,10 +19,6 @@ type Order {
   status: String!
 }
 
-type Creation_Result {
-  clientSecret: String!
-}
-
 type Query {
   order(id: String!): Order!
   orders: [Order!]!
@@ -30,6 +26,6 @@ type Query {
 }
 
 type Mutation {
-  createOrder(productId: String!): Creation_Result!
+  createOrder(productId: String!): Order!
   changeOrderStatus(id: String!, status: String!): Order!
 }
