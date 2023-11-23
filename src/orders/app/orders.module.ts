@@ -18,12 +18,9 @@ import { formatError } from 'src/utils/helpers/formatError';
 import { ApolloServerPluginCacheControl } from '@apollo/server/plugin/cacheControl';
 import responseCachePlugin from '@apollo/server-plugin-response-cache';
 import { StripeModule } from 'nestjs-stripe';
-
-import { config } from 'dotenv';
 import { StripeService } from './payment.service';
 import { PaymentController } from './payment.controller';
-
-config();
+import { env } from 'src/utils/env';
 
 @Module({
   imports: [
@@ -49,7 +46,7 @@ config();
       typePaths: ['dist/app/order.graphql'],
       plugins: [
         ApolloServerPluginCacheControl({
-          defaultMaxAge: +process.env.REDIS_DEFAULT_TTL,
+          defaultMaxAge: +env.REDIS_DEFAULT_TTL,
         }),
         responseCachePlugin(),
       ],
@@ -57,7 +54,7 @@ config();
       formatError,
     }),
     StripeModule.forRoot({
-      apiKey: process.env.STRIPE_API_KEY,
+      apiKey: env.STRIPE_API_KEY,
       apiVersion: '2023-10-16',
     }),
   ],

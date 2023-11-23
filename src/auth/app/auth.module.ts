@@ -6,7 +6,6 @@ import { options } from 'src/utils/database/ormconfig';
 import { User } from 'src/utils/entities';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import { config } from 'dotenv';
 import { RefreshStrategy } from './strategies/refresh.strategy';
 import { GraphQLModule } from '@nestjs/graphql/dist';
 import {
@@ -17,8 +16,7 @@ import { LocalStrategy } from './strategies/local.strategy';
 import { AccessStrategy } from 'src/utils/strategies/access.strategy';
 import { SessionSerializer } from 'src/utils/strategies/session.serializer';
 import { formatError } from 'src/utils/helpers/formatError';
-
-config();
+import { env } from 'src/utils/env';
 
 @Module({
   imports: [
@@ -33,8 +31,8 @@ config();
     TypeOrmModule.forRoot(options),
     TypeOrmModule.forFeature([User]),
     JwtModule.register({
-      secret: process.env.JWT_SECRET_REFRESH_KEY,
-      signOptions: { expiresIn: process.env.REFRESH_EXPIRE_TIME },
+      secret: env.JWT_SECRET_REFRESH_KEY,
+      signOptions: { expiresIn: env.REFRESH_EXPIRE_TIME },
     }),
     PassportModule,
   ],

@@ -15,6 +15,7 @@ import { SessionSerializer } from 'src/utils/strategies/session.serializer';
 import { formatError } from 'src/utils/helpers/formatError';
 import { ApolloServerPluginCacheControl } from '@apollo/server/plugin/cacheControl';
 import responseCachePlugin from '@apollo/server-plugin-response-cache';
+import { env } from 'src/utils/env';
 
 @Module({
   imports: [
@@ -22,7 +23,7 @@ import responseCachePlugin from '@apollo/server-plugin-response-cache';
       driver: ApolloFederationDriver,
       plugins: [
         ApolloServerPluginCacheControl({
-          defaultMaxAge: +process.env.REDIS_DEFAULT_TTL,
+          defaultMaxAge: +env.REDIS_DEFAULT_TTL,
         }),
         responseCachePlugin(),
       ],

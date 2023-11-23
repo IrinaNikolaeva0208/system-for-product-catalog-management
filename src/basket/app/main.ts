@@ -5,10 +5,7 @@ import * as session from 'express-session';
 import * as passport from 'passport';
 import { WinstonModule } from 'nest-winston';
 import { ApplicationLogger } from 'src/utils/logger';
-
-import { config } from 'dotenv';
-
-config();
+import { env } from 'src/utils/env';
 
 async function bootstrap() {
   const app = await NestFactory.create(BasketModule, {
@@ -18,7 +15,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
   app.use(
     session({
-      secret: process.env.SESSION_SECRET,
+      secret: env.SESSION_SECRET,
       resave: false,
       saveUninitialized: false,
       cookie: { maxAge: 36000000 },

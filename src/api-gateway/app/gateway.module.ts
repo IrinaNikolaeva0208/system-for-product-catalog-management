@@ -1,11 +1,9 @@
 import { Module } from '@nestjs/common';
-import { config } from 'dotenv';
 import { GraphQLModule } from '@nestjs/graphql';
 import { IntrospectAndCompose } from '@apollo/gateway/dist';
 import { ApolloGatewayDriverConfig, ApolloGatewayDriver } from '@nestjs/apollo';
 import { GraphQLDataSource } from './gql.datasource';
-
-config();
+import { env } from 'src/utils/env';
 
 @Module({
   imports: [
@@ -17,19 +15,19 @@ config();
           subgraphs: [
             {
               name: 'auth',
-              url: `http://auth:${process.env.AUTH_PORT}/graphql`,
+              url: `http://auth:${env.AUTH_PORT}/graphql`,
             },
             {
               name: 'catalog',
-              url: `http://catalog:${process.env.CATALOG_PORT}/graphql`,
+              url: `http://catalog:${env.CATALOG_PORT}/graphql`,
             },
             {
               name: 'basket',
-              url: `http://basket:${process.env.BASKET_PORT}/graphql`,
+              url: `http://basket:${env.BASKET_PORT}/graphql`,
             },
             {
               name: 'orders',
-              url: `http://orders:${process.env.ORDERS_PORT}/graphql`,
+              url: `http://orders:${env.ORDERS_PORT}/graphql`,
             },
           ],
         }),

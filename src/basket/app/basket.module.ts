@@ -24,6 +24,7 @@ import { ApolloServerPluginCacheControl } from '@apollo/server/plugin/cacheContr
 import responseCachePlugin from '@apollo/server-plugin-response-cache';
 import Keyv = require('keyv');
 import { KeyvAdapter } from '@apollo/utils.keyvadapter';
+import { env } from 'src/utils/env';
 
 @Module({
   imports: [
@@ -31,11 +32,11 @@ import { KeyvAdapter } from '@apollo/utils.keyvadapter';
     GraphQLModule.forRoot<ApolloFederationDriverConfig>({
       driver: ApolloFederationDriver,
       cache: new KeyvAdapter(
-        new Keyv(`redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`),
+        new Keyv(`redis://${env.REDIS_HOST}:${env.REDIS_PORT}`),
       ),
       plugins: [
         ApolloServerPluginCacheControl({
-          defaultMaxAge: +process.env.REDIS_DEFAULT_TTL,
+          defaultMaxAge: +env.REDIS_DEFAULT_TTL,
         }),
         responseCachePlugin(),
       ],
