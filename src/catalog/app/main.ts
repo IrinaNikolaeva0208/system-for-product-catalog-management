@@ -6,7 +6,7 @@ import * as session from 'express-session';
 import * as passport from 'passport';
 import { WinstonModule } from 'nest-winston';
 import { ApplicationLogger } from 'src/utils/logger';
-import { MicroserviceModule } from './microservice.module';
+import { MicroserviceModule } from './microservice/microservice.module';
 import { env } from 'src/utils/env';
 
 async function bootstrap() {
