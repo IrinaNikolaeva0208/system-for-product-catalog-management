@@ -1,5 +1,5 @@
 import { User, Product } from 'src/utils/entities';
-import { OrderStatus } from 'src/utils/enums/orderStatus.enum';
+import { PaymentStatus } from 'src/utils/enums/paymentStatus.enum';
 import {
   PrimaryGeneratedColumn,
   Column,
@@ -22,5 +22,5 @@ export class Order {
   product: Product;
 
   @Column()
-  status: OrderStatus;
+  paymentStatus: PaymentStatus;
 }
