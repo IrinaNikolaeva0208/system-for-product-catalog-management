@@ -11,7 +11,7 @@ import { Repository } from 'typeorm';
 import { Order, Product } from 'src/utils/entities';
 import { PaymentStatus } from 'src/utils/enums/paymentStatus.enum';
 import { ClientKafka, RpcException } from '@nestjs/microservices';
-import { StripeService } from './payment.service';
+import { StripeService } from './payment/payment.service';
 import Stripe from 'stripe';
 
 @Injectable()
