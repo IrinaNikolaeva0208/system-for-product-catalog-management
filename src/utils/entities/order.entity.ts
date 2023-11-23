@@ -1,5 +1,5 @@
 import { User, Product } from 'src/utils/entities';
-import { PaymentStatus } from 'src/utils/enums/paymentStatus.enum';
+import { PaymentStatus } from 'src/utils/enums';
 import {
   PrimaryGeneratedColumn,
   Column,

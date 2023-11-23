@@ -6,15 +6,13 @@ import { options } from 'src/utils/database/ormconfig';
 import { User } from 'src/utils/entities';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import { RefreshStrategy } from './strategies/refresh.strategy';
 import { GraphQLModule } from '@nestjs/graphql/dist';
 import {
   ApolloFederationDriverConfig,
   ApolloFederationDriver,
 } from '@nestjs/apollo';
-import { LocalStrategy } from './strategies/local.strategy';
-import { AccessStrategy } from 'src/utils/strategies/access.strategy';
-import { SessionSerializer } from 'src/utils/strategies/session.serializer';
+import { LocalStrategy, RefreshStrategy } from './strategies';
+import { AccessStrategy, SessionSerializer } from 'src/utils/strategies';
 import { formatError } from 'src/utils/helpers/formatError';
 import { env } from 'src/utils/env';
 

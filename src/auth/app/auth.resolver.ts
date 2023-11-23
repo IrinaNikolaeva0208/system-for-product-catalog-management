@@ -9,9 +9,8 @@ import {
   Context,
   ResolveReference,
 } from '@nestjs/graphql/dist';
-import { RefreshGuard } from './guards/refresh.guard';
-import { LocalGuard } from './guards/local.guard';
-import { Role } from 'src/utils/enums/role.enum';
+import { RefreshGuard, LocalGuard } from './guards';
+import { Role } from 'src/utils/enums';
 import { Roles, Public, CurrentUser } from 'src/utils/decorators';
 import { AccessGuard, AuthenticatedGuard, RolesGuard } from 'src/utils/guards';
 

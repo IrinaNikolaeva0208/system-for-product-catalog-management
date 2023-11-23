@@ -1,6 +1,5 @@
-import { Product, User, DeletedId } from 'src/utils/entities';
-import { CreateProductInput } from './dto/create-product.input';
-import { UpdateProductInput } from './dto/update-product.input';
+import { User, DeletedId } from 'src/utils/entities';
+import { CreateProductInput, UpdateProductInput } from './dto';
 import { CatalogService } from './catalog.service';
 import {
   Resolver,

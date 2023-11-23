@@ -6,7 +6,7 @@ import {
   OneToOne,
 } from 'typeorm';
 import { ObjectType, Field, ID, Directive } from '@nestjs/graphql/dist';
-import { Role } from 'src/utils/enums/role.enum';
+import { Role } from 'src/utils/enums';
 import { Basket, Product, Order } from 'src/utils/entities';
 
 @ObjectType()
