@@ -23,6 +23,6 @@ async function bootstrap() {
   );
   app.use(passport.initialize());
   app.use(passport.session());
-  app.listen(3004);
+  app.listen(env.BASKET_PORT);
 }
 bootstrap();

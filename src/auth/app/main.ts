@@ -26,6 +26,6 @@ async function bootstrap() {
   app.use(passport.initialize());
   app.use(passport.session());
   app.use(cookieParser());
-  app.listen(3002);
+  app.listen(env.AUTH_PORT);
 }
 bootstrap();

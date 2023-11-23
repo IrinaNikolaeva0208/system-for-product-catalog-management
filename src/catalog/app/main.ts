@@ -25,7 +25,7 @@ async function bootstrap() {
   );
   app.use(passport.initialize());
   app.use(passport.session());
-  app.listen(3001);
+  app.listen(env.CATALOG_PORT);
 
   const microservice = await NestFactory.createMicroservice(
     MicroserviceModule,
