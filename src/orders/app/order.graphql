@@ -1,0 +1,31 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type User @key(fields: "id") {
+  id: ID!
+  orders: [Order!]!
+}
+
+type Product @key(fields: "id") {
+  id: ID!
+  orders: [Order!]!
+}
+
+type Order {
+  id: ID!
+  buyer: User!
+  product: Product!
+  status: String!
+}
+
+type Query {
+  order(id: String!): Order!
+  orders: [Order!]!
+  productOrders(id: String!): [Order!]!
+}
+
+type Mutation {
+  createOrder(productId: String!): Order!
+  changeOrderStatus(id: String!, status: String!): Order!
+}
