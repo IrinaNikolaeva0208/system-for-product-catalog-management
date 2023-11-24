@@ -7,11 +7,11 @@ import {
   ResolveField,
 } from '@nestjs/graphql';
 import { ParseUUIDPipe, UseGuards } from '@nestjs/common';
-import { OrdersService } from './orders.service';
-import { Order } from './entities';
+import { OrdersService } from '../services/orders.service';
+import { Order } from '../entities';
 import { AccessGuard, AuthenticatedGuard, RolesGuard } from 'src/utils/guards';
 import { CurrentUser, Roles } from 'src/utils/decorators';
-import { Role } from 'src/utils/enums/role.enum';
+import { Role } from 'src/utils/enums';
 import { User } from 'src/utils/entities';
 import { CacheControl } from 'nestjs-gql-cache-control';
 

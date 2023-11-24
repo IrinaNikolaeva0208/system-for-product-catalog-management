@@ -4,17 +4,17 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Product } from 'src/utils/entities';
 import { options } from 'src/utils/database/ormconfig';
 import { GraphQLModule } from '@nestjs/graphql/dist';
-import { AccessStrategy } from 'src/utils/strategies/access.strategy';
 import {
   ApolloFederationDriverConfig,
   ApolloFederationDriver,
 } from '@nestjs/apollo';
 import { CatalogResolver } from './catalog.resolver';
 import { PassportModule } from '@nestjs/passport';
-import { SessionSerializer } from 'src/utils/strategies/session.serializer';
+import { SessionSerializer, AccessStrategy } from 'src/utils/strategies';
 import { formatError } from 'src/utils/helpers/formatError';
 import { ApolloServerPluginCacheControl } from '@apollo/server/plugin/cacheControl';
 import responseCachePlugin from '@apollo/server-plugin-response-cache';
+import { env } from 'src/utils/env';
 
 @Module({
   imports: [
@@ -22,7 +22,7 @@ import responseCachePlugin from '@apollo/server-plugin-response-cache';
       driver: ApolloFederationDriver,
       plugins: [
         ApolloServerPluginCacheControl({
-          defaultMaxAge: +process.env.REDIS_DEFAULT_TTL,
+          defaultMaxAge: +env.REDIS_DEFAULT_TTL,
         }),
         responseCachePlugin(),
       ],

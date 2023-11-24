@@ -3,24 +3,23 @@ import {
   NotFoundException,
   ForbiddenException,
   UnprocessableEntityException,
-  Inject,
-  OnModuleInit,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Order, Product } from 'src/utils/entities';
 import { PaymentStatus } from 'src/utils/enums/paymentStatus.enum';
-import { ClientKafka, RpcException } from '@nestjs/microservices';
 import { StripeService } from './payment.service';
 import Stripe from 'stripe';
+import { choosePaymentStatus } from '../helpers/changePaymentStatus';
+import { ProductService } from './product.service';
 
 @Injectable()
-export class OrdersService implements OnModuleInit {
+export class OrdersService {
   constructor(
     @InjectRepository(Order)
     private readonly ordersRepository: Repository<Order>,
-    @Inject('CATALOG_MICROSERVICE') private readonly catalogClient: ClientKafka,
     private stripeService: StripeService,
+    private productService: ProductService,
   ) {}
 
   async getById(id: string, userId: string) {
@@ -48,14 +47,7 @@ export class OrdersService implements OnModuleInit {
   }
 
   async create(productId: string, userId: string) {
-    const requiredProduct = await new Promise<any>((resolve, reject) =>
-      this.catalogClient.send('product.byId', productId).subscribe(
-        (product: Product) => {
-          resolve(product);
-        },
-        (err) => reject(new RpcException(err.response)),
-      ),
-    );
+    await this.productService.checkIfProductExists(productId);
 
     const newOrder = this.ordersRepository.create({
       buyer: { id: userId },
@@ -66,12 +58,12 @@ export class OrdersService implements OnModuleInit {
     await this.ordersRepository.save(newOrder);
 
     const createdOrder = await this.getById(newOrder.id, userId);
-    const paymentIntent = await this.stripeService.createPaymentIntent(
+    await this.stripeService.createPaymentIntent(
       createdOrder.id,
       createdOrder.product.price,
     );
 
-    return { clientSecret: paymentIntent.client_secret };
+    return createdOrder;
   }
 
   async changePaymentStatus(event: Stripe.Event) {
@@ -81,25 +73,10 @@ export class OrdersService implements OnModuleInit {
       where: { id: orderId },
     });
 
-    switch (event.type) {
-      case 'payment_intent.succeeded':
-        order.paymentStatus = PaymentStatus.Succeded;
-        break;
-
-      case 'payment_intent.processing':
-        order.paymentStatus = PaymentStatus.Processing;
-        break;
-
-      case 'payment_intent.payment_failed':
-        order.paymentStatus = PaymentStatus.Failed;
-        break;
-
-      default:
-        order.paymentStatus = PaymentStatus.Created;
-        break;
-    }
-
-    const updateResult = await this.ordersRepository.update(order.id, order);
+    const updateResult = await this.ordersRepository.update(
+      order.id,
+      choosePaymentStatus(order, event.type),
+    );
 
     if (updateResult.affected === 1) {
       return `Record successfully updated with Payment Status ${order.paymentStatus}`;
@@ -122,9 +99,5 @@ export class OrdersService implements OnModuleInit {
       where: { product: { id } },
       relations: { buyer: true, product: true },
     });
-  }
-
-  onModuleInit() {
-    this.catalogClient.subscribeToResponseOf('product.byId');
   }
 }

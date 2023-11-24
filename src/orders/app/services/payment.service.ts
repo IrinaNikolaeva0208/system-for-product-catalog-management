@@ -1,10 +1,6 @@
-import {
-  Injectable,
-  Logger,
-  UnprocessableEntityException,
-} from '@nestjs/common';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { Stripe } from 'stripe';
-import * as util from 'util';
+import { env } from 'src/utils/env';
 import { InjectStripe } from 'nestjs-stripe';
 
 @Injectable()
@@ -18,7 +14,7 @@ export class StripeService {
     try {
       const paymentIntentParams: Stripe.PaymentIntentCreateParams = {
         amount: Number(totalAmount),
-        currency: process.env.STRIPE_CURRENCY,
+        currency: env.STRIPE_CURRENCY,
         payment_method_types: ['card'],
         metadata: { orderId },
       };

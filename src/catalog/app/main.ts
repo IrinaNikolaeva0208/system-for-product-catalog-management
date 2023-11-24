@@ -6,11 +6,8 @@ import * as session from 'express-session';
 import * as passport from 'passport';
 import { WinstonModule } from 'nest-winston';
 import { ApplicationLogger } from 'src/utils/logger';
-
-import { config } from 'dotenv';
-import { MicroserviceModule } from './microservice.module';
-
-config();
+import { MicroserviceModule } from './microservice/microservice.module';
+import { env } from 'src/utils/env';
 
 async function bootstrap() {
   const app = await NestFactory.create(CatalogModule, {
@@ -20,7 +17,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
   app.use(
     session({
-      secret: process.env.SESSION_SECRET,
+      secret: env.SESSION_SECRET,
       resave: false,
       saveUninitialized: false,
       cookie: { maxAge: 36000000 },
@@ -28,7 +25,7 @@ async function bootstrap() {
   );
   app.use(passport.initialize());
   app.use(passport.session());
-  app.listen(3001);
+  app.listen(env.CATALOG_PORT);
 
   const microservice = await NestFactory.createMicroservice(
     MicroserviceModule,

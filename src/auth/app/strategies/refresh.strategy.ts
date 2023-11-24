@@ -7,13 +7,14 @@ import {
   UnauthorizedException,
   ForbiddenException,
 } from '@nestjs/common';
+import { env } from 'src/utils/env';
 
 @Injectable()
 export class RefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
   constructor(private jwtService: JwtService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: process.env.JWT_SECRET_REFRESH_KEY,
+      secretOrKey: env.JWT_SECRET_REFRESH_KEY,
       passReqToCallback: true,
     });
   }

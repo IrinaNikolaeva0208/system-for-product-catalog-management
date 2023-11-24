@@ -1,6 +1,6 @@
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload, RpcException } from '@nestjs/microservices';
-import { CatalogService } from './catalog.service';
+import { CatalogService } from '../catalog.service';
 
 @Controller()
 export class MicroserviceController {
