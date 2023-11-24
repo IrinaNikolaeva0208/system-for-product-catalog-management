@@ -18,7 +18,7 @@ services:
       - catalog
       - basket
       - orders
-    command: yarn run start:dev
+    command: yarn run start
 
   auth:
     container_name: auth
@@ -33,7 +33,7 @@ services:
       - "${AUTH_PORT}:${AUTH_PORT}"
     depends_on:
       - postgres
-    command: yarn run start:dev
+    command: yarn run start
 
   catalog:
     container_name: catalog
@@ -49,7 +49,7 @@ services:
     depends_on:
       - postgres
       - kafka
-    command: yarn run start:dev
+    command: yarn run start
 
   basket:
     container_name: basket
@@ -65,7 +65,7 @@ services:
     depends_on:
       - postgres
       - kafka
-    command: yarn run start:dev
+    command: yarn run start
 
   orders:
     container_name: orders
@@ -80,7 +80,7 @@ services:
       - ${ORDERS_PORT}:${ORDERS_PORT}
     depends_on:
       - postgres
-    command: yarn run start:dev
+    command: yarn run start
 
   postgres:
     container_name: postgres1
