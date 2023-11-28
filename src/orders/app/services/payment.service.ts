@@ -14,7 +14,7 @@ export class StripeService {
     try {
       const paymentIntentParams: Stripe.PaymentIntentCreateParams = {
         amount: Number(totalAmount),
-        currency: env.STRIPE_CURRENCY,
+        currency: env.STRIPE_CURRENCY as string,
         payment_method_types: ['card'],
         metadata: { orderId },
       };

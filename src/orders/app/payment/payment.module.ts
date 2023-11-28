@@ -13,7 +13,7 @@ import { env } from 'src/utils/env';
     TypeOrmModule.forRoot(options),
     TypeOrmModule.forFeature([Order]),
     StripeModule.forRoot({
-      apiKey: env.STRIPE_API_KEY,
+      apiKey: env.STRIPE_API_KEY as string,
       apiVersion: '2023-10-16',
     }),
     ClientsModule.register([

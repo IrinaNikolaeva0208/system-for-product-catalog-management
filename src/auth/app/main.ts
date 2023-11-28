@@ -17,7 +17,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
   app.use(
     session({
-      secret: env.SESSION_SECRET,
+      secret: env.SESSION_SECRET as string,
       resave: false,
       saveUninitialized: false,
       cookie: { maxAge: 36000000 },
@@ -26,6 +26,6 @@ async function bootstrap() {
   app.use(passport.initialize());
   app.use(passport.session());
   app.use(cookieParser());
-  app.listen(env.AUTH_PORT);
+  app.listen(env.AUTH_PORT as string);
 }
 bootstrap();

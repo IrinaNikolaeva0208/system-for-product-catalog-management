@@ -25,7 +25,10 @@ export class AuthService {
     const createdUser = this.userRepository.create({
       ...userDto,
       role: Role.User,
-      password: await bcrypt.hash(userDto.password, +env.CRYPT_SALT),
+      password: await bcrypt.hash(
+        userDto.password,
+        +(env.CRYPT_SALT as string),
+      ),
     });
     return await this.userRepository.save(createdUser);
   }
@@ -35,7 +38,9 @@ export class AuthService {
   }
 
   async login(user: UserInput) {
-    const { password, ...payload } = await this.findByLogin(user.login);
+    const { password, ...payload } = (await this.findByLogin(
+      user.login,
+    )) as User;
 
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(payload, {

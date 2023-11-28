@@ -21,11 +21,11 @@ import { env } from 'src/utils/env';
       typePaths: ['dist/app/order.graphql'],
       plugins: [
         ApolloServerPluginCacheControl({
-          defaultMaxAge: +env.REDIS_DEFAULT_TTL,
+          defaultMaxAge: +(env.REDIS_DEFAULT_TTL as string),
         }),
         responseCachePlugin(),
       ],
-      context: ({ req }) => ({ req }),
+      context: ({ req }: { req: any }) => ({ req }),
       formatError,
     }),
   ],

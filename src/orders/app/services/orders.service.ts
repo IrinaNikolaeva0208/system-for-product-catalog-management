@@ -67,11 +67,11 @@ export class OrdersService {
   }
 
   async changePaymentStatus(event: Stripe.Event) {
-    const orderId = event.data.object['metadata'].orderId;
+    const orderId = (event.data.object as any)['metadata'].orderId;
 
-    const order = await this.ordersRepository.findOne({
+    const order = (await this.ordersRepository.findOne({
       where: { id: orderId },
-    });
+    })) as Order;
 
     const updateResult = await this.ordersRepository.update(
       order.id,

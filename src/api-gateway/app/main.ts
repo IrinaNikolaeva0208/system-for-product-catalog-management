@@ -12,7 +12,7 @@ async function bootstrap() {
   try {
     app.enableCors();
     app.useGlobalPipes(new ValidationPipe());
-    await app.listen(env.GATEWAY_PORT);
+    await app.listen(env.GATEWAY_PORT as string);
   } catch (err) {
     await app.close();
     logger.error('Unable to connect to microservices. Retrying...');

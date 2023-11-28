@@ -35,12 +35,12 @@ import { env } from 'src/utils/env';
       ),
       plugins: [
         ApolloServerPluginCacheControl({
-          defaultMaxAge: +env.REDIS_DEFAULT_TTL,
+          defaultMaxAge: +(env.REDIS_DEFAULT_TTL as string),
         }),
         responseCachePlugin(),
       ],
       typePaths: ['dist/app/basket.graphql'],
-      context: ({ req }) => ({ req }),
+      context: ({ req }: { req: any }) => ({ req }),
       formatError,
     }),
     TypeOrmModule.forRoot(options),

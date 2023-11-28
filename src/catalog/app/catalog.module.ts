@@ -22,12 +22,12 @@ import { env } from 'src/utils/env';
       driver: ApolloFederationDriver,
       plugins: [
         ApolloServerPluginCacheControl({
-          defaultMaxAge: +env.REDIS_DEFAULT_TTL,
+          defaultMaxAge: +(env.REDIS_DEFAULT_TTL as string),
         }),
         responseCachePlugin(),
       ],
       typePaths: ['dist/app/catalog.graphql'],
-      context: ({ req }) => ({ req }),
+      context: ({ req }: { req: any }) => ({ req }),
       formatError,
     }),
     TypeOrmModule.forRoot(options),

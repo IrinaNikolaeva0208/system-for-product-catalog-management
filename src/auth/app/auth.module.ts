@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthResolver } from './auth.resolver';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { options } from 'src/utils/database/ormconfig';
 import { User } from 'src/utils/entities';
 import { JwtModule } from '@nestjs/jwt';
@@ -24,9 +24,9 @@ import { env } from 'src/utils/env';
         federation: 2,
       },
       formatError,
-      context: ({ req, res }) => ({ req, res }),
+      context: ({ req, res }: { res: any; req: any }) => ({ req, res }),
     }),
-    TypeOrmModule.forRoot(options),
+    TypeOrmModule.forRoot(options as TypeOrmModuleOptions),
     TypeOrmModule.forFeature([User]),
     JwtModule.register({
       secret: env.JWT_SECRET_REFRESH_KEY,
