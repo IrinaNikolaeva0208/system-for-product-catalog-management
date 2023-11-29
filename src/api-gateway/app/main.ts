@@ -2,8 +2,8 @@ import { NestFactory } from '@nestjs/core';
 import { GatewayModule } from './gateway.module';
 import { ValidationPipe } from '@nestjs/common/pipes';
 import { WinstonModule } from 'nest-winston';
+import { ConfigService } from '@nestjs/config';
 import { ApplicationLogger as logger } from 'src/utils/logger';
-import { env } from 'src/utils/env';
 
 async function bootstrap() {
   const app = await NestFactory.create(GatewayModule, {
@@ -12,7 +12,9 @@ async function bootstrap() {
   try {
     app.enableCors();
     app.useGlobalPipes(new ValidationPipe());
-    await app.listen(env.GATEWAY_PORT as string);
+    const configService = app.get(ConfigService);
+    const PORT = configService.get<number>('GATEWAY_PORT');
+    await app.listen(PORT);
   } catch (err) {
     await app.close();
     logger.error('Unable to connect to microservices. Retrying...');

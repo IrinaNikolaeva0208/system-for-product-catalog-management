@@ -2,7 +2,7 @@ import { Product as OrderProduct, Order } from '../entities';
 import { ResolveField, Resolver, Parent } from '@nestjs/graphql';
 import { OrdersService } from '../services/orders.service';
 
-@Resolver('product')
+@Resolver()
 export class ProductResolver {
   constructor(private readonly ordersService: OrdersService) {}
 

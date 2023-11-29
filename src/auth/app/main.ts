@@ -6,18 +6,21 @@ import * as session from 'express-session';
 import * as passport from 'passport';
 import { WinstonModule } from 'nest-winston';
 import { ApplicationLogger } from 'src/utils/logger';
-import { env } from 'src/utils/env';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AuthModule, {
     logger: WinstonModule.createLogger({ instance: ApplicationLogger }),
   });
+  const configService = app.get(ConfigService);
+  const PORT = configService.get<number>('AUTH_PORT');
+  const SECRET = configService.get<string>('SESSION_SECRET');
   app.enableCors();
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalPipes(new ValidationPipe());
   app.use(
     session({
-      secret: env.SESSION_SECRET as string,
+      secret: SECRET,
       resave: false,
       saveUninitialized: false,
       cookie: { maxAge: 36000000 },
@@ -26,6 +29,6 @@ async function bootstrap() {
   app.use(passport.initialize());
   app.use(passport.session());
   app.use(cookieParser());
-  app.listen(env.AUTH_PORT as string);
+  app.listen(PORT);
 }
 bootstrap();

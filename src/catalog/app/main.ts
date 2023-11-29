@@ -1,4 +1,5 @@
 import { NestFactory } from '@nestjs/core';
+import { ConfigService } from '@nestjs/config/dist';
 import { CatalogModule } from './catalog.module';
 import { ValidationPipe } from '@nestjs/common';
 import { Transport } from '@nestjs/microservices';
@@ -7,17 +8,19 @@ import * as passport from 'passport';
 import { WinstonModule } from 'nest-winston';
 import { ApplicationLogger } from 'src/utils/logger';
 import { MicroserviceModule } from './microservice/microservice.module';
-import { env } from 'src/utils/env';
 
 async function bootstrap() {
   const app = await NestFactory.create(CatalogModule, {
     logger: WinstonModule.createLogger({ instance: ApplicationLogger }),
   });
+  const configService = app.get(ConfigService);
+  const PORT = configService.get<number>('CATALOG_PORT');
+  const SECRET = configService.get<string>('SESSION_SECRET');
   app.enableCors();
   app.useGlobalPipes(new ValidationPipe());
   app.use(
     session({
-      secret: env.SESSION_SECRET as string,
+      secret: SECRET,
       resave: false,
       saveUninitialized: false,
       cookie: { maxAge: 36000000 },
@@ -25,7 +28,7 @@ async function bootstrap() {
   );
   app.use(passport.initialize());
   app.use(passport.session());
-  app.listen(env.CATALOG_PORT as string);
+  app.listen(PORT);
 
   const microservice = await NestFactory.createMicroservice(
     MicroserviceModule,

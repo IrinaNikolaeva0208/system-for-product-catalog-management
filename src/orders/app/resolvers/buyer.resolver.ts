@@ -2,7 +2,7 @@ import { User as OrderBuyer, Order } from '../entities';
 import { ResolveField, Resolver, Parent } from '@nestjs/graphql';
 import { OrdersService } from '../services/orders.service';
 
-@Resolver('buyer')
+@Resolver()
 export class BuyerResolver {
   constructor(private readonly ordersService: OrdersService) {}
 

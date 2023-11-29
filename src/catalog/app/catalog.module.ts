@@ -14,21 +14,26 @@ import { SessionSerializer, AccessStrategy } from 'src/utils/strategies';
 import { formatError } from 'src/utils/helpers/formatError';
 import { ApolloServerPluginCacheControl } from '@apollo/server/plugin/cacheControl';
 import responseCachePlugin from '@apollo/server-plugin-response-cache';
-import { env } from 'src/utils/env';
+import { ConfigModule, ConfigService } from '@nestjs/config/dist';
 
 @Module({
   imports: [
-    GraphQLModule.forRoot<ApolloFederationDriverConfig>({
+    ConfigModule.forRoot(),
+    GraphQLModule.forRootAsync<ApolloFederationDriverConfig>({
       driver: ApolloFederationDriver,
-      plugins: [
-        ApolloServerPluginCacheControl({
-          defaultMaxAge: +(env.REDIS_DEFAULT_TTL as string),
-        }),
-        responseCachePlugin(),
-      ],
-      typePaths: ['dist/app/catalog.graphql'],
-      context: ({ req }: { req: any }) => ({ req }),
-      formatError,
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        plugins: [
+          ApolloServerPluginCacheControl({
+            defaultMaxAge: configService.get<number>('REDIS_DEFAULT_TTL'),
+          }),
+          responseCachePlugin(),
+        ],
+        typePaths: ['dist/app/catalog.graphql'],
+        context: ({ req }: { req: any }) => ({ req }),
+        formatError,
+      }),
     }),
     TypeOrmModule.forRoot(options),
     TypeOrmModule.forFeature([Product]),
