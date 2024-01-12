@@ -6,7 +6,6 @@ import {
   Entity,
   JoinColumn,
   JoinTable,
-  Column,
 } from 'typeorm';
 
 @Entity()

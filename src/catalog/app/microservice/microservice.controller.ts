@@ -11,7 +11,7 @@ export class MicroserviceController {
     try {
       return JSON.stringify(await this.catalogService.getById(id));
     } catch (err) {
-      throw new RpcException(err);
+      throw new RpcException(err as object);
     }
   }
 }

@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { BasketService } from './basket.service';
 import { BasketResolver } from './basket.resolver';
 import { GraphQLModule } from '@nestjs/graphql';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import {
   ApolloFederationDriverConfig,
   ApolloFederationDriver,
@@ -23,25 +24,33 @@ import { ApolloServerPluginCacheControl } from '@apollo/server/plugin/cacheContr
 import responseCachePlugin from '@apollo/server-plugin-response-cache';
 import Keyv = require('keyv');
 import { KeyvAdapter } from '@apollo/utils.keyvadapter';
-import { env } from 'src/utils/env';
 
 @Module({
   imports: [
     CqrsModule,
-    GraphQLModule.forRoot<ApolloFederationDriverConfig>({
+    ConfigModule.forRoot(),
+    GraphQLModule.forRootAsync<ApolloFederationDriverConfig>({
       driver: ApolloFederationDriver,
-      cache: new KeyvAdapter(
-        new Keyv(`redis://${env.REDIS_HOST}:${env.REDIS_PORT}`),
-      ),
-      plugins: [
-        ApolloServerPluginCacheControl({
-          defaultMaxAge: +env.REDIS_DEFAULT_TTL,
-        }),
-        responseCachePlugin(),
-      ],
-      typePaths: ['dist/app/basket.graphql'],
-      context: ({ req }) => ({ req }),
-      formatError,
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        cache: new KeyvAdapter(
+          new Keyv(
+            `redis://${configService.get<string>(
+              'REDIS_HOST',
+            )}:${configService.get<string>('REDIS_PORT')}`,
+          ),
+        ),
+        plugins: [
+          ApolloServerPluginCacheControl({
+            defaultMaxAge: configService.get<number>('REDIS_DEFAULT_TTL'),
+          }),
+          responseCachePlugin(),
+        ],
+        typePaths: ['dist/app/basket.graphql'],
+        context: ({ req }: { req: any }) => ({ req }),
+        formatError,
+      }),
     }),
     TypeOrmModule.forRoot(options),
     TypeOrmModule.forFeature([Basket]),

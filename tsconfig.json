@@ -11,13 +11,15 @@
     "outDir": "./dist",
     "baseUrl": "./",
     "incremental": true,
-    "skipLibCheck": true,
+    "skipLibCheck": true, 
     "strictNullChecks": false,
-    "noImplicitAny": false,
-    "strictBindCallApply": false,
+    "strictPropertyInitialization": false,
+    "strict":true,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false
   },
+  "exclude": [
+    "node_modules"],
   "watchOptions": {
     "watchFile": "priorityPollingInterval",
     "watchDirectory": "dynamicprioritypolling",
