@@ -4,7 +4,7 @@ import { env } from '../env';
 const options: DataSourceOptions = {
   type: 'postgres',
   host: env.POSTGRES_HOST,
-  port: +env.POSTGRES_PORT,
+  port: +(env.POSTGRES_PORT as string),
   username: env.POSTGRES_USER,
   password: env.POSTGRES_PASSWORD,
   database: env.POSTGRES_DB,

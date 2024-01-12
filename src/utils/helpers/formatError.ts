@@ -1,7 +1,7 @@
 import { ApplicationLogger as logger } from '../logger';
-import { GraphQLError } from 'graphql';
+import { GraphQLFormattedError } from 'graphql';
 
-export const formatError = (error: GraphQLError) => {
+export const formatError = (error: GraphQLFormattedError) => {
   const originalError = error.extensions?.originalError as any;
 
   if (!originalError) {
@@ -18,5 +18,5 @@ export const formatError = (error: GraphQLError) => {
     code: error.extensions?.code,
   };
   logger.warn(formatted.message);
-  return formatted;
+  return formatted as GraphQLFormattedError;
 };

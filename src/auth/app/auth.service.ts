@@ -4,19 +4,20 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm/dist';
+import { ConfigService } from '@nestjs/config';
 import { User } from 'src/utils/entities';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UserInput } from './dto/user.input';
 import { Role } from 'src/utils/enums/role.enum';
-import { env } from 'src/utils/env';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
     private readonly jwtService: JwtService,
+    private configService: ConfigService,
   ) {}
 
   async create(userDto: UserInput) {
@@ -25,7 +26,10 @@ export class AuthService {
     const createdUser = this.userRepository.create({
       ...userDto,
       role: Role.User,
-      password: await bcrypt.hash(userDto.password, +env.CRYPT_SALT),
+      password: await bcrypt.hash(
+        userDto.password,
+        this.configService.get<number>('CRYPT_SALT'),
+      ),
     });
     return await this.userRepository.save(createdUser);
   }
@@ -35,12 +39,14 @@ export class AuthService {
   }
 
   async login(user: UserInput) {
-    const { password, ...payload } = await this.findByLogin(user.login);
+    const { password, ...payload } = (await this.findByLogin(
+      user.login,
+    )) as User;
 
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(payload, {
-        secret: env.JWT_SECRET_KEY,
-        expiresIn: env.SECRET_EXPIRE_TIME,
+        secret: this.configService.get<string>('JWT_SECRET_KEY'),
+        expiresIn: this.configService.get<string>('SECRET_EXPIRE_TIME'),
       }),
       this.jwtService.signAsync(payload),
     ]);
@@ -60,8 +66,8 @@ export class AuthService {
 
   async refresh(payload: any) {
     const accessToken = await this.jwtService.signAsync(payload, {
-      secret: env.JWT_SECRET_KEY,
-      expiresIn: env.SECRET_EXPIRE_TIME,
+      secret: this.configService.get<string>('JWT_SECRET_KEY'),
+      expiresIn: this.configService.get<string>('SECRET_EXPIRE_TIME'),
     });
     return { accessToken };
   }

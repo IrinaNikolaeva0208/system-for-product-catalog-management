@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
 import { AuthResolver } from './auth.resolver';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { options } from 'src/utils/database/ormconfig';
 import { User } from 'src/utils/entities';
 import { JwtModule } from '@nestjs/jwt';
@@ -14,23 +15,29 @@ import {
 import { LocalStrategy, RefreshStrategy } from './strategies';
 import { AccessStrategy, SessionSerializer } from 'src/utils/strategies';
 import { formatError } from 'src/utils/helpers/formatError';
-import { env } from 'src/utils/env';
 
 @Module({
   imports: [
+    ConfigModule.forRoot(),
     GraphQLModule.forRoot<ApolloFederationDriverConfig>({
       driver: ApolloFederationDriver,
       autoSchemaFile: {
         federation: 2,
       },
       formatError,
-      context: ({ req, res }) => ({ req, res }),
+      context: ({ req, res }: { res: any; req: any }) => ({ req, res }),
     }),
-    TypeOrmModule.forRoot(options),
+    TypeOrmModule.forRoot(options as TypeOrmModuleOptions),
     TypeOrmModule.forFeature([User]),
-    JwtModule.register({
-      secret: env.JWT_SECRET_REFRESH_KEY,
-      signOptions: { expiresIn: env.REFRESH_EXPIRE_TIME },
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET_REFRESH_KEY'),
+        signOptions: {
+          expiresIn: configService.get<string>('REFRESH_EXPIRE_TIME'),
+        },
+      }),
     }),
     PassportModule,
   ],
